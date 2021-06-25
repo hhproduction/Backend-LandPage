@@ -1,10 +1,10 @@
 const multer = require('multer')
 
 //set storage
-const DIRProduct = './uploads/product'
+const DIRProduct = './src/uploads/product'
 const DIRAdmin = './src/uploads/admin'
-const DIRCustomer = './uploads/customer'
-const DIRNews = './uploads/news'
+const DIRCustomer = './src/uploads/customer'
+const DIRNews = './src/uploads/news'
 var storageProduct = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, DIRProduct)
