@@ -34,7 +34,7 @@ Route.post('/upload',
 Route.post('/adminAvatar/delete',
     requireLogin,
     requireRole('ADMIN'),
-    Trycatch(accountController.deleteCustomerAvatarByID)
+    Trycatch(accountController.deleteAdminAvatarByID)
 );
 Route.put('/:id', requireLogin, requireRole("ADMIN"), Trycatch(accountController.updateAccountInforByID))
 Route.put('/update_password/:id', requireLogin, requireRole("ADMIN"), Trycatch(accountController.updatePasswordByID))

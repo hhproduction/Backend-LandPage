@@ -88,7 +88,7 @@ const deleteCustomer = async (req, res) => {
 const deleteCustomerAvatarByID = async (req, res) => {
     const dirPath = './'
     const { avatar } = req.body
-    const sqlAvatar = '%' + avatar.split('\\').pop() + '%';
+    const sqlAvatar = '%' + avatar.split('/').pop() + '%';
     await customerService.deleteCustomerAvatarByID(sqlAvatar)
     fs.unlink(path.join(dirPath, avatar), (err) => {
         if (err) {

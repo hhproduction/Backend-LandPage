@@ -88,7 +88,7 @@ const getProductByProducerID = async (req, res) => {
 const deleteProductImage = async (req, res) => {
     const dirPath = './'
     const { image } = req.body
-    const sqlImage = '%' + image.split('\\').pop() + '%';
+    const sqlImage = '%' + image.split('/').pop() + '%';
     await productService.deleteProductImageByID(sqlImage)
     fs.unlink(path.join(dirPath, image), (err) => {
         if (err) {

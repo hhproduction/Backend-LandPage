@@ -1,7 +1,7 @@
 const accountService = require('../services/account')
 const fs = require('fs')
 const security = require('../utils/security')
-
+const path = require('path')
 const getAccountbyId = async (req, res) => {
     const token = req.headers.authorization.split(' ')[1]
     const decodedToken = security.verifyToken(token)
@@ -79,7 +79,7 @@ const updatePasswordByID = async (req, res) => {
 const deleteAdminAvatarByID = async (req, res) => {
     const dirPath = './'
     const { avatar } = req.body
-    const sqlAvatar = '%' + avatar.split('\\').pop() + '%';
+    const sqlAvatar = '%' + avatar.split('/').pop() + '%';
     await accountService.deleteAdminAvatarByID(sqlAvatar)
     fs.unlink(path.join(dirPath, avatar), (err) => {
         if (err) {
