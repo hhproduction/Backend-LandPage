@@ -1,14 +1,14 @@
 const multer = require('multer')
 const path = require('path')
-const fs = require('fs')
+
 //set storage
-const DIRProduct = path.resolve(__dirname,'../uploads/product')
-const DIRAdmin = path.resolve(__dirname,'../uploads/admin')
-const DIRCustomer = path.resolve(__dirname,'../uploads/customer')
-const DIRNews = path.resolve(__dirname,'../uploads/news')
+const DIRProduct = path.resolve(__dirname, '../uploads/product')
+const DIRAdmin = path.resolve(__dirname, '../uploads/admin')
+const DIRCustomer = path.resolve(__dirname, '../uploads/customer')
+const DIRNews = path.resolve(__dirname, '../uploads/news')
 var storageProduct = multer.diskStorage({
     destination: (req, file, cb) => {
-        fs.mkdir(DIRProduct, err => cb (err, DIRProduct))
+        cb(null, DIRProduct)
     },
     filename: (req, file, cb) => {
         //image.jpg
@@ -17,7 +17,7 @@ var storageProduct = multer.diskStorage({
 })
 var storageAdmin = multer.diskStorage({
     destination: (req, file, cb) => {
-        fs.mkdir(DIRAdmin, err => cb (err, DIRAdmin))
+        cb(null, DIRAdmin)
     },
     filename: (req, file, cb) => {
         //image.jpg
@@ -26,7 +26,7 @@ var storageAdmin = multer.diskStorage({
 })
 var storageCustomer = multer.diskStorage({
     destination: (req, file, cb) => {
-        fs.mkdir(DIRCustomer, err => cb (err, DIRCustomer))
+        cb(null, DIRCustomer)
     },
     filename: (req, file, cb) => {
         //image.jpg
@@ -35,7 +35,7 @@ var storageCustomer = multer.diskStorage({
 })
 var storageNews = multer.diskStorage({
     destination: (req, file, cb) => {
-        fs.mkdir(DIRNews, err => cb (err, DIRNews))
+        cb(null, DIRNews)
     },
     filename: (req, file, cb) => {
         //image.jpg
