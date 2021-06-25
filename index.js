@@ -13,7 +13,7 @@ const app = express()
 
 //Middleware
 
-app.use('/uploads',express.static(path.resolve(__dirname,'./src/uploads')))
+// app.use('/uploads',express.static(path.resolve(__dirname,'./src/uploads')))
 app.use(bodyParser.json())
 app.use(cors())
 var accessLogStream = rfs.createStream('access.log', {
