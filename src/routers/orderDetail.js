@@ -1,8 +1,11 @@
-const  Route = require('express').Router();
+const Route = require('express').Router();
 const orderDetailController = require('../controller/orderDetail')
-const {Trycatch} = require('../middlewares/errorHandle')
+const { Trycatch } = require('../middlewares/errorHandle')
+const { requireLogin, requireRole } = require('../middlewares/auth')
 
 Route.get('/',
+  requireLogin,
+  requireRole('ADMIN'),
   Trycatch(orderDetailController.getAllOrderDetail));
 
 Route.get('/:id',
@@ -13,7 +16,7 @@ Route.post('/',
 
 Route.put('/:id',
   Trycatch(orderDetailController.updateOrderDetail));
-  
+
 Route.delete('/:id',
   Trycatch(orderDetailController.deleteOrderDetail));
 

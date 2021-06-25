@@ -1,15 +1,18 @@
 const db = require('../utils/db')
+const uuidv4 = require('uuid')
 const getAllProduct = async ({ limit, offset }) => {
     const sql = `
-    select productId, display, provider, \`description\`,productDetail, imageUrl,videoUrl, priceIn, priceOut, discount, shipday, feedBack, instock, categoryId, created_at, updated_at
-    from product
-    where isDelete = 0
+    select db_product.id, db_product.\`name\`, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`,db_product_image.image
+    from db_product, db_product_image
+    where db_product.id = productID
+    and db_product.trash = 0
+    group by productID
     limit ?
     offset ?;
     `
     const data = await db.queryMulti(sql, [limit, offset])
     const countsql = `
-    select count(productId) as total from product`
+    select count(id) as total from db_product`
     const { total } = await db.queryOne(countsql)
     return {
         data,
@@ -19,30 +22,43 @@ const getAllProduct = async ({ limit, offset }) => {
         }
     }
 }
-const getProductbyID = async (id) => {
+const getProductById = async (id) => {
     const sql = `
-    select productId, display, provider, \`description\`,productDetail, imageUrl,videoUrl, priceIn, priceOut, discount, shipday, feedBack, instock, categoryId, created_at, updated_at
-    from product
-    where isDelete = 0 and productId=?`
+    select db_product.id,db_category.\`name\` as category, db_product.\`name\`,db_product.videoUrl,db_product.detail,db_product.feedBack, db_producer.\`name\` as producer,db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
+    from db_product
+    inner join db_category on db_category.id = db_product.catid
+    inner join db_producer on db_producer.id = db_product.producer
+    where db_product.trash = 0 and db_product.id=?;    
+    `
+    const sqlImageProduct = `
+    select db_product_image.id, db_product_image.image, db_product_image.\`type\`, db_product_image.size, db_product_image.productID
+	from db_product_image
+    inner join db_product on db_product.id = db_product_image.productID
+    where db_product_image.productID = ?;
+    `
     const data = await db.queryOne(sql, [id])
+    const listImage = await db.queryMulti(sqlImageProduct, [id])
     return {
-        data
+        data,
+        listImage
     }
 }
-const getProductbyCategorybyID = async (categoryId,{limit,offset}) => {
+const getProductByName = async (name, { limit, offset }) => {
     const sql = `
-    select productId, display, provider, \`description\`,productDetail, imageUrl,videoUrl, priceIn, priceOut, discount, shipday, feedBack, instock, categoryId, created_at, updated_at
-    from product
-    where isDelete=0 and categoryId=?
+    select db_product.id, db_product.\`name\`, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`,db_product_image.image
+    from db_product, db_product_image
+    where db_product.id = productID
+    and db_product.trash = 0 and db_product.\`name\` LIKE ?
+    group by productID
     limit ?
     offset ?;
     `
-    const data = await db.queryMulti(sql, [categoryId,limit,offset])
+    const data = await db.queryMulti(sql, [name, limit, offset])
     const countsql = `
-    select count(productId) as total from product
-    where isDelete=0 and categoryId=?
+    select count(id) as total from db_product
+    where trash =0 and db_product.\`name\` LIKE ?
     `
-    const { total } = await db.queryOne(countsql,[categoryId])
+    const { total } = await db.queryOne(countsql, [name])
     return {
         data,
         metadata: {
@@ -51,43 +67,108 @@ const getProductbyCategorybyID = async (categoryId,{limit,offset}) => {
         }
     }
 }
-const creatProduct = async ({ display, provider, description,productDetail, imageUrl,videoUrl, priceIn, priceOut, discount, shipday,feedBack, instock, categoryId }) => {
+const getProductByCategoryID = async (categoryId, { limit, offset }) => {
     const sql = `
-    insert into product (productId, display, provider, \`description\`,productDetail, imageUrl,videoUrl, priceIn, priceOut, discount, shipday, feedBack, instock, categoryId)
-    values(uuid(),?,?,?,?,?,?,?,?,?,?,?,?,?)`
-    await db.query(sql, [display, provider, description, productDetail,imageUrl, videoUrl,priceIn, priceOut, discount, shipday,feedBack, instock, categoryId])
-
+    select db_product.id, db_product.\`name\`, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`,db_product_image.image
+    from db_product, db_product_image
+    where db_product.id = productID
+    and db_product.trash = 0 and db_product.catid=? 
+    group by productID
+    limit ?
+    offset ?;
+    `
+    const data = await db.queryMulti(sql, [categoryId, limit, offset])
+    const countsql = `
+    select count(id) as total from db_product
+    where trash =0 and catid=?
+    `
+    const { total } = await db.queryOne(countsql, [categoryId])
+    return {
+        data,
+        metadata: {
+            length: data.length,
+            total
+        }
+    }
 }
-const updateProductbyID = async ({ display, provider, description,productDetail, imageUrl,videoUrl, priceIn, priceOut, discount, shipday,feedBack, instock, categoryId ,productId}) => {
+const getProductByProducerID = async (categoryId, { limit, offset }) => {
     const sql = `
-update product
-set display = ?,
- provider = ?, 
- description = ?, 
- productDetail =?,
- imageUrl = ?, 
+    select db_product.id, db_product.\`name\`, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`,db_product_image.image
+    from db_product, db_product_image
+    where db_product.id = productID
+    and db_product.trash = 0 and db_product.producer=? 
+    group by productID
+    limit ?
+    offset ?;
+    `
+    const data = await db.queryMulti(sql, [categoryId, limit, offset])
+    const countsql = `
+    select count(id) as total from db_product
+    where trash =0 and producer=?
+    `
+    const { total } = await db.queryOne(countsql, [categoryId])
+    return {
+        data,
+        metadata: {
+            length: data.length,
+            total
+        }
+    }
+}
+const createProduct = async ({ catid, name, videoUrl, detail, feedBack, producer, instock, number_buy, price }) => {
+    const sql = `
+    insert into db_product (id, catid, \`name\`,  videoUrl, detail, feedBack, producer, instock, number_buy, price)
+    values(uuid(),?,?,?,?,?,?,?,?,?);
+    `
+    await db.query(sql, [catid, name, videoUrl, detail, feedBack, producer, instock, number_buy, price])
+}
+const createProductImage = async (files, id) => {
+    var values = new Array();
+    for (let i = 0; i < files.length; i++) {
+        values.push([uuidv4.v4(), files[i].path, files[i].mimetype, files[i].size, id])
+    }
+    const sql = `
+    insert into db_product_image (\`id\`, \`image\`,\`type\`,\`size\`,\`productID\`) values 
+    ?
+    `
+    await db.query(sql, [values])
+}
+const updateProductByID = async ({ name, videoUrl, detail, feedBack, producer, instock, number_buy, price, catid, productID }) => {
+    const sql = `
+update db_product
+set \`name\` = ?, 
  videoUrl =?,
- priceIn = ?, 
- priceOut = ?, 
- discount = ?, 
- shipday = ?, 
+ detail = ?, 
  feedBack =?,
+ producer = ?, 
  instock = ?, 
- categoryId = ? 
- where productId = ? and isDelete = 0`
-    await db.query(sql, [display, provider, description,productDetail, imageUrl,videoUrl, priceIn, priceOut, discount, shipday,feedBack, instock, categoryId,productId])
+ number_buy = ?, 
+ price = ?,  
+ catid = ? 
+ where id = ? and trash = 0;
+ `
+    await db.query(sql, [name, videoUrl, detail, feedBack, producer, instock, number_buy, price, catid, productID])
 }
-const deleteProductbyID = async (id) => {
-    const sql = `update product
-    set isDelete =1
-    where productId = ?`
+const deleteProductByID = async (id) => {
+    const sql = `
+    update db_product
+    set trash =1
+    where id = ?;
+    `
+    await db.query(sql, [id])
+}
+const deleteProductImageByID = async (id) => {
+    const sql = `
+    delete from db_product_image where image like ?;
+    `
     await db.query(sql, [id])
 }
 const parameterProduct = async () => {
     const sql = `
-    select productId,display
-    from product
-    where isDelete=0`
+    select id, \`name\`
+    from db_product
+    where trash=0;
+    `
     const data = await db.queryMulti(sql);
     return {
         data,
@@ -98,10 +179,14 @@ const parameterProduct = async () => {
 }
 module.exports = {
     getAllProduct,
-    getProductbyID,
-    creatProduct,
-    updateProductbyID,
-    deleteProductbyID,
-    getProductbyCategorybyID,
-    parameterProduct
+    getProductById,
+    createProduct,
+    createProductImage,
+    updateProductByID,
+    deleteProductByID,
+    getProductByCategoryID,
+    parameterProduct,
+    getProductByName,
+    getProductByProducerID,
+    deleteProductImageByID
 }

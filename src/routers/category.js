@@ -1,16 +1,22 @@
 const express = require('express')
 const Route = express.Router()
 const categoryController = require('../controller/category')
+const { requireLogin, requireRole } = require('../middlewares/auth')
 const { Trycatch } = require('../middlewares/errorHandle')
 Route.get('/',
     Trycatch(categoryController.getAllCategory))
 Route.get('/:id',
-    Trycatch(categoryController.getCategorybyId))
+    Trycatch(categoryController.getCategoryByID))
 Route.post('/',
+    requireLogin,
+    requireRole("ADMIN"),
     Trycatch(categoryController.createCategory))
 Route.put('/:id',
-    Trycatch(categoryController.updateCategorybyId))
+    requireLogin,
+    requireRole("ADMIN"),
+    Trycatch(categoryController.updateCategoryByID))
 Route.delete('/:id',
-    Trycatch(categoryController.deleteCategorybyId))
-
+    requireLogin,
+    requireRole("ADMIN"),
+    Trycatch(categoryController.deleteCategoryByID))
 module.exports = Route

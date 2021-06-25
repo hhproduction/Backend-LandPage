@@ -15,6 +15,7 @@ const getOrderDetailbyId = async (req, res) => {
         data
     })
 }
+
 const createOrderDetail = async (req, res) => {
     await orderDetailService.createOrderDetail(req.body)
     res.send({
@@ -24,18 +25,18 @@ const createOrderDetail = async (req, res) => {
 }
 const updateOrderDetail = async (req, res) => {
     const { id } = req.params;
-    await orderDetailService.updateOrderDetail(id,req.body)
+    await orderDetailService.updateOrderDetail(req.body, id)
     res.send({
-        status:1,
-        message:"update thanh cong orderDetail"
+        status: 1,
+        message: "update thanh cong orderDetail"
     })
 }
-const deleteOrderDetail = async (req,res) =>{
-    const{id}=req.params
+const deleteOrderDetail = async (req, res) => {
+    const { id } = req.params
     await orderDetailService.deleteOrderDetail(id)
     res.send({
-        status:1,
-        message:"xoa thanh cong orderDetail"
+        status: 1,
+        message: "xoa thanh cong orderDetail"
     })
 }
 module.exports = {

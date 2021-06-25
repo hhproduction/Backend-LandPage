@@ -1,10 +1,10 @@
-const db = require('../utils/db');
+
 
 const requireLogin = (req, res, next) => {
     try {
         const token = req.headers.authorization.split(' ')[1]
         const decodedToken = require('../utils/security').verifyToken(token)
-        console.log(decodedToken);
+        req.adminID = decodedToken.adminID
         req.username = decodedToken.username
         req.role = decodedToken.role
         next()
@@ -19,7 +19,19 @@ const requireRole = (role) => async (req, res, next) => {
         next('khong duoc cap quyen')//403
     }
 }
+const requireCustomerLogin = (req, res, next) => {
+    try {
+        const token = req.headers.authorization.split(' ')[1]
+        const decodedToken = require('../utils/security').verifyToken(token)
+        req.username = decodedToken.username
+        req.customerId = decodedToken.customerId
+        next()
+    } catch (error) {
+        next('xac thuc that bai')//401
+    }
+}
 module.exports = {
     requireLogin,
-    requireRole
+    requireRole,
+    requireCustomerLogin
 }
