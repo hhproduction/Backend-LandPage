@@ -2,7 +2,7 @@ const multer = require('multer')
 
 //set storage
 const DIRProduct = './uploads/product'
-const DIRAdmin = './uploads/admin'
+const DIRAdmin = './src/uploads/admin'
 const DIRCustomer = './uploads/customer'
 const DIRNews = './uploads/news'
 var storageProduct = multer.diskStorage({
