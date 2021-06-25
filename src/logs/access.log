@@ -683,3 +683,5 @@
 ::1 - - [25/Jun/2021:10:56:05 +0000] "POST /api/v1/auth_admin/login HTTP/1.1" 200 231 "-" "PostmanRuntime/7.28.1"
 ::1 - - [25/Jun/2021:11:31:53 +0000] "POST /api/v1/admin HTTP/1.1" 200 83 "-" "PostmanRuntime/7.28.1"
 ::1 - - [25/Jun/2021:11:32:20 +0000] "POST /api/v1/auth_admin/login HTTP/1.1" 200 234 "-" "PostmanRuntime/7.28.1"
+::1 - - [25/Jun/2021:11:48:31 +0000] "POST /api/v1/auth_admin/login HTTP/1.1" 500 2400 "-" "PostmanRuntime/7.28.1"
+::1 - - [25/Jun/2021:11:49:36 +0000] "POST /api/v1/auth_admin/login HTTP/1.1" 200 234 "-" "PostmanRuntime/7.28.1"
