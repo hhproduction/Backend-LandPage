@@ -1,10 +1,10 @@
 const multer = require('multer')
 const path = require('path')
 //set storage
-const DIRProduct = path.join(__dirname,'/uploads/product')
-const DIRAdmin = path.join(__dirname,'/uploads/admin')
-const DIRCustomer = path.join(__dirname,'/uploads/customer')
-const DIRNews = path.join(__dirname,'/uploads/news')
+const DIRProduct = path.resolve(__dirname,'./uploads/product')
+const DIRAdmin = path.resolve(__dirname,'./uploads/admin')
+const DIRCustomer = path.resolve(__dirname,'./uploads/customer')
+const DIRNews = path.resolve(__dirname,'./uploads/news')
 var storageProduct = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, DIRProduct)
