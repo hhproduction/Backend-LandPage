@@ -2,28 +2,32 @@ const mysql = require('mysql');
 
 
 const pool = mysql.createPool({
+    connectionLimit: 1000,
+    connectTimeout: 60 * 60 * 1000,
+    acquireTimeout: 60 * 60 * 1000,
+    timeout: 60 * 60 * 1000,
     host: process.env.HOST,
     port: process.env.PORT,
     user: process.env.USER,
     password: process.env.PASSWORD,
     database: process.env.DATABASE,
 })
-if(!pool){
+if (!pool) {
     console.log("Database is not connect.");
 }
-else{
+else {
     console.log("Database is connected successful.");
 }
 
 const logMySQLQuerry = (sql, params) => {
     console.log('sql:',
-    mysql.format(sql,params)
-    .replace(/\r?\n|r/g,' ')
-    .split(' ').filter(e => e !== '').join(' '));
+        mysql.format(sql, params)
+            .replace(/\r?\n|r/g, ' ')
+            .split(' ').filter(e => e !== '').join(' '));
 }
 
 const query = (sql, params) => {
-    logMySQLQuerry(sql,params)
+    logMySQLQuerry(sql, params)
     return new Promise((resolve, reject) => {
         pool.query(sql, params, (err, result) => {
             if (err) reject(err)
@@ -33,7 +37,7 @@ const query = (sql, params) => {
 }
 // return (q,p).then().catch(err).finally(nhat ky)
 const queryOne = (sql, params) => {
-    logMySQLQuerry(sql,params)
+    logMySQLQuerry(sql, params)
     return new Promise((resolve, reject) => {
         pool.query(sql, params, (err, result) => {
             if (err) reject(err)
@@ -42,7 +46,7 @@ const queryOne = (sql, params) => {
     })
 }
 const queryMulti = (sql, params) => {
-    logMySQLQuerry(sql,params)
+    logMySQLQuerry(sql, params)
     return new Promise((resolve, reject) => {
         pool.query(sql, params, (err, result) => {
             if (err) {
