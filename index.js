@@ -7,7 +7,7 @@ const path = require('path')
 const bodyParser = require('body-parser')
 const morgan = require('morgan')
 const rfs = require('rotating-file-stream')
-const pagination = require('./middlewares/pagination')
+const pagination = require('./src/middlewares/pagination')
 
 const app = express()
 
@@ -32,18 +32,18 @@ app.use((req, res, next) => {
 })
 
 //Router
-const authAdmin = require('./routers/auth')
-const authCustomer = require('./routers/authCustomer')
-const parameterRouter = require('./routers/parameter')
-const categoryRouter = require('./routers/category')
-const productRouter = require('./routers/product')
-const orderRouter = require('./routers/order')
-const accountRouter = require('./routers/account')
-const customerRouter = require('./routers/customer')
-const orderDetailRouter = require('./routers/orderDetail')
-const provinceRouter = require('./routers/province')
-const districtRouter = require('./routers/district')
-const producerRouter = require('./routers/producer')
+const authAdmin = require('./src/routers/auth')
+const authCustomer = require('./src/routers/authCustomer')
+const parameterRouter = require('./src/routers/parameter')
+const categoryRouter = require('./src/routers/category')
+const productRouter = require('./src/routers/product')
+const orderRouter = require('./src/routers/order')
+const accountRouter = require('./src/routers/account')
+const customerRouter = require('./src/routers/customer')
+const orderDetailRouter = require('./src/routers/orderDetail')
+const provinceRouter = require('./src/routers/province')
+const districtRouter = require('./src/routers/district')
+const producerRouter = require('./src/routers/producer')
 
 app.use('/api/v1/auth_admin', authAdmin);
 app.use('/api/v1/auth_customer', authCustomer);
