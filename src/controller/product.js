@@ -41,7 +41,7 @@ const uploadMultipleProductImage = async (req, res, next) => {
         const error = new Error('Please choose files');
         return next(error)
     }
-    // await productService.createProductImage(files, id)
+    await productService.createProductImage(files, id)
     res.send({
         status: 1,
         message: "upload image successfull",
