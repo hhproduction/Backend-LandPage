@@ -1,6 +1,5 @@
 const newsService = require('../services/news')
-const fs = require('fs')
-const path = require('path')
+const {s3} = require('../middlewares/multer')
 const getAllNews = async (req, res) => {
     const { data, metadata } = await newsService.getAllNews(req.pagination)
     res.send({
@@ -32,6 +31,7 @@ const uploadMultipleNewsImage = async (req, res, next) => {
         const error = new Error('Please choose files');
         return next(error)
     }
+    s3
     await newsService.createNewsImage(files, id)
     res.send({
         status: 1,
@@ -59,21 +59,23 @@ const deleteNews = async (req, res) => {
 }
 
 const deleteNewsImage = async (req, res) => {
-    const dirPath = './'
     const { image } = req.body
-    const sqlImage = '%' + image.split('/').pop() + '%';
+    const key = image.split('/').pop()
+    const sqlImage = '%' + key + '%';
     await newsService.deleteNewsImageByID(sqlImage)
-    fs.unlink(path.join(dirPath, image), (err) => {
+    var params = {
+        Bucket: process.env.AWS_BUCKET_NAME,
+        Key: key
+    }
+    s3.deleteObject(params, (err, data) => {
         if (err) {
-            console.log(err)
-            res.send({
-                status: 0,
-                msg: 'Failed to delete image.'
+            res.status(499).send({
+                message: err
             })
-        } else {
-            res.send({
-                status: 1,
-                msg: 'Delete image successful.'
+        }
+        else {
+            res.status(200).send({
+                message: "delete image successful."
             })
         }
     })

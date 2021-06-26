@@ -1,6 +1,5 @@
 const productService = require('../services/product')
-const fs = require('fs')
-const path = require('path')
+const { s3 } = require('../middlewares/multer')
 const getAllproduct = async (req, res) => {
     const { data, metadata } = await productService.getAllProduct(req.pagination)
     res.send({
@@ -42,7 +41,7 @@ const uploadMultipleProductImage = async (req, res, next) => {
         const error = new Error('Please choose files');
         return next(error)
     }
-    await productService.createProductImage(files, id)
+    // await productService.createProductImage(files, id)
     res.send({
         status: 1,
         message: "upload image successfull",
@@ -86,25 +85,28 @@ const getProductByProducerID = async (req, res) => {
     })
 }
 const deleteProductImage = async (req, res) => {
-    const dirPath = './'
     const { image } = req.body
-    const sqlImage = '%' + image.split('/').pop() + '%';
+    const key = image.split('/').pop()
+    const sqlImage = '%' + key + '%';
     await productService.deleteProductImageByID(sqlImage)
-    fs.unlink(path.join(dirPath, image), (err) => {
+    var params = {
+        Bucket: process.env.AWS_BUCKET_NAME,
+        Key: key
+    }
+    s3.deleteObject(params, (err, data) => {
         if (err) {
-            console.log(err)
-            res.send({
-                status: 0,
-                msg: 'Failed to delete image.'
+            res.status(499).send({
+                message: err
             })
-        } else {
-            res.send({
-                status: 1,
-                msg: 'Delete image successful.'
+        }
+        else {
+            res.status(200).send({
+                message: "delete image successful."
             })
         }
     })
 }
+
 module.exports = {
     getAllproduct,
     getProductById,

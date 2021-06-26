@@ -87,12 +87,12 @@ const createCustomer = async ({ fullname, username, password, birth, gender, pro
     }
 
 }
-const createCustomerAvatar = async (file, id) => {
+const createCustomerAvatar = async (path, mimetype, size, id) => {
     const sql = `
     insert into db_customer_avatar (\`id\`,\`customerID\`, \`avatar\`,\`type\`,\`size\`) values 
     (uuid(),?,?,?,?)
     `
-    await db.query(sql, [id, file.path, file.mimetype, file.size])
+    await db.query(sql, [id, path, mimetype, size])
 }
 const updateCustomerInforByID = async ({ fullname, username, avatar, birth, gender, province, district, address, phone, email, status, id }) => {
     const sql = `
@@ -112,7 +112,7 @@ const updateCustomerInforByID = async ({ fullname, username, avatar, birth, gend
     `
     await db.query(sql, [fullname, username, avatar, birth, gender, province, district, address, phone, email, status, id])
 }
-const updatePasswordByID = async ({ oldPassword, newPassword },id) => {
+const updatePasswordByID = async ({ oldPassword, newPassword }, id) => {
     const sqlPassword = `
     select \`password\` 
     from db_customer
@@ -128,11 +128,11 @@ const updatePasswordByID = async ({ oldPassword, newPassword },id) => {
         `
         const encryptedPassword = await security.generatePassword(newPassword)
         await db.query(sql, [encryptedPassword, id])
-        return{
-            status : 1
+        return {
+            status: 1
         }
     }
-    else{
+    else {
         return {
             status: 0,
             message: "Wrong old password."

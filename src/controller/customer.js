@@ -1,7 +1,6 @@
 const customerService = require('../services/customer')
-const fs = require('fs')
 const security = require('../utils/security')
-const path = require('path')
+const {s3}= require('../middlewares/multer')
 const getAllCustomer = async (req, res) => {
     const { data, metadata } = await customerService.getAllCustomer(req.pagination)
     res.send({
@@ -22,7 +21,7 @@ const getCustomerInfo = async (req, res) => {
     })
 }
 const getCustomerbyId = async (req, res) => {
-    const {customerId} = req.params
+    const { customerId } = req.params
     const { data, avatar } = await customerService.getCustomerById(customerId)
     res.send({
         status: 1,
@@ -47,11 +46,19 @@ const uploadCustomerAvatar = async (req, res, next) => {
         const error = new Error('Please choose file')
         return next(error)
     }
-    await customerService.createCustomerAvatar(file, customerId)
-    res.send({
-        status: 1,
-        message: "upload image successfull",
-        data: file
+    let myFile = file.originalname.split(".")
+    const fileType = myFile[myFile.length - 1]
+    const params = {
+        Bucket: process.env.AWS_BUCKET_NAME,
+        Key: `${uuid.v4()}.${fileType}`,
+        Body: file.buffer
+    }
+    s3.upload(params, async (error, data) => {
+        if (error) {
+            res.status(500).send(error)
+        }
+        await customerService.createCustomerAvatar(data.Location, file.mimetype, file.size, customerId)
+        res.status(200).send(data)
     })
 }
 const updateCustomerInforByID = async (req, res) => {
@@ -65,16 +72,16 @@ const updateCustomerInforByID = async (req, res) => {
 const updatePasswordByID = async (req, res) => {
     const { id } = req.params;
     const result = await customerService.updatePasswordByID(req.body, id)
-    if(result.status){
+    if (result.status) {
         res.send({
             status: 1,
-            message: "update mat khau thanh cong" 
+            message: "update mat khau thanh cong"
         })
     }
-    else{
+    else {
         res.send({
             status: 0,
-            message: "update mat khau that bai, " + result.message 
+            message: "update mat khau that bai, " + result.message
         })
     }
 }
@@ -86,21 +93,23 @@ const deleteCustomer = async (req, res) => {
     })
 }
 const deleteCustomerAvatarByID = async (req, res) => {
-    const dirPath = './'
     const { avatar } = req.body
-    const sqlAvatar = '%' + avatar.split('/').pop() + '%';
+    const key = avatar.split('/').pop()
+    const sqlAvatar = '%' + key + '%';
     await customerService.deleteCustomerAvatarByID(sqlAvatar)
-    fs.unlink(path.join(dirPath, avatar), (err) => {
-        if (err) {
-            console.log(err)
-            res.send({
-                status: 0,
-                msg: 'Failed to delete image.'
+    var params = {
+        Bucket: process.env.AWS_BUCKET_NAME,
+        Key: key
+    }
+    s3.deleteObject(params, (err, data) => {
+        if(err){
+            res.status(499).send({
+                message: err
             })
-        } else {
-            res.send({
-                status: 1,
-                msg: 'Delete image successful.'
+        }
+        else{
+            res.status(200).send({
+                message:"delete image successful."
             })
         }
     })

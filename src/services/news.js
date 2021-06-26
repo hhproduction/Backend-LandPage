@@ -52,7 +52,7 @@ const createNews = async ({ title, detail, videoUrl }) => {
 const createNewsImage = async (files, id) => {
     var values = new Array();
     for (let i = 0; i < files.length; i++) {
-        values.push([uuidv4.v4(), id, files[i].path, files[i].mimetype, files[i].size])
+        values.push([uuidv4.v4(), id, files[i].location, files[i].mimetype, files[i].size])
     }
     const sql = `
     insert into db_news_image (\`id\`,\`newsID\`, \`image\`,\`type\`,\`size\`,) values 

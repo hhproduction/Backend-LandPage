@@ -63,12 +63,12 @@ const getAccountbyId = async (id) => {
 //         }
 //     }
 // }
-const createAdminAvatar = async (file, id) => {
+const createAdminAvatar = async (path, mimetype, size, id) => {
     const sql = `
     insert into db_admin_avatar (\`id\`,\`adminID\`, \`avatar\`,\`type\`,\`size\`) values 
     (uuid(),?,?,?,?)
     `
-    await db.query(sql, [id, file.path, file.mimetype, file.size])
+    await db.query(sql, [id, path, mimetype, size])
 }
 const updateAccountInforByID = async ({ fullname, username, role, birth, email, gender, phone, address, status }, id) => {
     const sql = `
@@ -102,8 +102,8 @@ const updatePasswordByID = async ({ oldPassword, newPassword }, id) => {
         `
         const encryptedPassword = await security.generatePassword(newPassword)
         await db.query(sql, [encryptedPassword, id])
-        return{
-            status : 1
+        return {
+            status: 1
         }
     }
     else {

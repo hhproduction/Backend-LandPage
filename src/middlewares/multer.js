@@ -1,41 +1,25 @@
 const multer = require('multer')
+const multerS3 = require('multer-s3')
+const AWS = require('aws-sdk')
 const path = require('path')
 
+const s3 = new AWS.S3({
+    accessKeyId: process.env.AWS_ID,
+    secretAccessKey: process.env.AWS_SECRET
+})
 //set storage
-const DIRProduct = path.resolve(__dirname, '../uploads/product')
-const DIRAdmin = path.resolve(__dirname, '../uploads/admin')
-const DIRCustomer = path.resolve(__dirname, '../uploads/customer')
-const DIRNews = path.resolve(__dirname, '../uploads/news')
-var storageProduct = multer.diskStorage({
+var storageAdmin = multer.memoryStorage({
     destination: (req, file, cb) => {
-        cb(null, DIRProduct)
+        cb(null, '')
     },
     filename: (req, file, cb) => {
         //image.jpg
         cb(null, new Date().toISOString().replace(/:/g, '-') + file.originalname)
     }
 })
-var storageAdmin = multer.diskStorage({
+var storageCustomer = multer.memoryStorage({
     destination: (req, file, cb) => {
-        cb(null, DIRAdmin)
-    },
-    filename: (req, file, cb) => {
-        //image.jpg
-        cb(null, new Date().toISOString().replace(/:/g, '-') + file.originalname)
-    }
-})
-var storageCustomer = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, DIRCustomer)
-    },
-    filename: (req, file, cb) => {
-        //image.jpg
-        cb(null, new Date().toISOString().replace(/:/g, '-') + file.originalname)
-    }
-})
-var storageNews = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, DIRNews)
+        cb(null, '')
     },
     filename: (req, file, cb) => {
         //image.jpg
@@ -52,38 +36,53 @@ const fileFilter = (req, file, cb) => {
         cb(new Error('Accept jpeg and png only.'), false)
     }
 }
+
 const storeProduct = multer({
-    storage: storageProduct,
+    storage: multerS3({
+        s3: s3,
+        bucket: process.env.AWS_BUCKET_NAME,
+        key: (req, file, cb) => {
+            cb(null, path.basename(file.originalname, path.extname(file.originalname))+'-'+Date.now() +path.extname(file.originalname))
+        }
+    }),
     limits: {
-        fileSize: 1024 * 1024 * 10
+        fileSize: 1024 * 1024 * 5
     },
-    fileFilter
+    fileFilter,
 })
 const storeAdmin = multer({
     storage: storageAdmin,
     limits: {
-        fileSize: 1024 * 1024 * 10
+        fileSize: 1024 * 1024 * 5
     },
-    fileFilter
+    fileFilter,
+
 })
 const storeCustomer = multer({
     storage: storageCustomer,
     limits: {
-        fileSize: 1024 * 1024 * 10
+        fileSize: 1024 * 1024 * 5
     },
-    fileFilter
+    fileFilter,
 })
 const storeNews = multer({
-    storage: storageNews,
+    storage: multerS3({
+        s3: s3,
+        bucket: process.env.AWS_BUCKET_NAME,
+        key: (req, file, cb) => {
+            cb(null, path.basename(file.originalname, path.extname(file.originalname))+'-'+Date.now() +path.extname(file.originalname))
+        }
+    }),
     limits: {
-        fileSize: 1024 * 1024 * 10
+        fileSize: 1024 * 1024 * 5
     },
-    fileFilter
+    fileFilter,
 })
 
 module.exports = {
     storeProduct,
     storeAdmin,
     storeCustomer,
-    storeNews
+    storeNews,
+    s3
 }

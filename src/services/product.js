@@ -125,7 +125,7 @@ const createProduct = async ({ catid, name, videoUrl, detail, feedBack, producer
 const createProductImage = async (files, id) => {
     var values = new Array();
     for (let i = 0; i < files.length; i++) {
-        values.push([uuidv4.v4(), files[i].path, files[i].mimetype, files[i].size, id])
+        values.push([uuidv4.v4(), files[i].location, files[i].mimetype, files[i].size, id])
     }
     const sql = `
     insert into db_product_image (\`id\`, \`image\`,\`type\`,\`size\`,\`productID\`) values 
