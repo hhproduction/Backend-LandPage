@@ -2,9 +2,11 @@ const db = require('../utils/db')
 const uuidv4 = require('uuid')
 const getAllProduct = async ({ limit, offset }) => {
     const sql = `
-    select db_product.id, db_product.\`name\`, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`,db_product_image.image
-    from db_product, db_product_image
-    where db_product.id = productID
+    select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`,db_product_image.image
+    from db_product, db_product_image, db_category, db_producer
+    where db_product.id = db_product_image.productID
+    and db_product.catid = db_category.id
+    and db_product.producer = db_producer.id
     and db_product.trash = 0
     group by productID
     limit ?
