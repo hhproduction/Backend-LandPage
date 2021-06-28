@@ -40,29 +40,6 @@ const getAccountbyId = async (id) => {
         avatar
     }
 }
-// const createAccount = async (newAccount) => {
-//     const checkExistedSQL = `
-//      select count(username) as c from db_admin where username=?
-//     `
-//     const exist = await db.queryOne(checkExistedSQL, [newAccount.username])
-//     if (exist.c > 0) {
-//         return {
-//             status: 0,
-//             message: "The account is exist."
-//         }
-//     } else {
-//         const sql = `
-//     insert into db_admin (id, fullname, username, \`password\`, role, birth, email, gender, phone, address )
-//     values(uuid(),?,?,?,?,?,?,?,?,?)`
-//         // const tinyAvatar = await tinyUrl.shorten(newAccount.avatar)
-//         const encryptedPassword = await security.generatePassword(newAccount.password)
-//         await db.query(sql, [newAccount.fullname, newAccount.username, encryptedPassword, newAccount.role, newAccount.birth, newAccount.email, newAccount.gender, newAccount.phone, newAccount.address])
-//         return {
-//             status: 1,
-//             message: "The account is sign up successfull."
-//         }
-//     }
-// }
 const createAdminAvatar = async (path, mimetype, size, id) => {
     const sql = `
     insert into db_admin_avatar (\`id\`,\`adminID\`, \`avatar\`,\`type\`,\`size\`) values 
@@ -143,7 +120,6 @@ module.exports = {
     // deleteAccountbyId,
     updateAccountInforByID,
     updatePasswordByID,
-    // createAccount,
     getAccountbyId,
     createAdminAvatar,
     deleteAdminAvatarByID,

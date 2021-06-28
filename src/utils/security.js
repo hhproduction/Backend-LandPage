@@ -8,7 +8,7 @@ const SALT_ROUND = 10
 // 1. mã hoá 1 chiều - mã hoá password ở dạng plaintext => lưu vào database
 const generatePassword = async (password) => {
   const hashedPassword = await bcrypt.hash(password, SALT_ROUND)
-  
+
   return hashedPassword;
 }
 
@@ -38,8 +38,20 @@ const verifyPassword = async (password, hashedPassword) => {
 
 // 4. giải mã mã hoá 2 chiều
 const verifyToken = token => {
-  const data = jwt.verify(token, JWT_SECRET_KEY);
-  return data
+  try {
+    const data = jwt.verify(token, JWT_SECRET_KEY);
+    return {
+      status:200,
+      data
+    }
+  } catch (error) {
+    return {
+      status: 401,
+      name: 'TokenExpiredError',
+      message: 'jwt expired',
+      expiredAt: error.expiredAt
+    }
+  }
 }
 // 5. mã hoá 2 chiều - tạo access_token cho customer
 const generateTokenCustomer = ({ username, customerId }) => {

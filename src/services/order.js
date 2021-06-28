@@ -63,7 +63,7 @@ const getGuestOrderbyPhone = async (id) => {
     `
     const orderCode = await db.queryOne(sqlOrderCode, id)
     const sqlOrderDetail = `
-    select db_orderdetail.id, db_orderdetail.orderid, db_product.\`name\`,db_product_image.image, db_product.price, db_product.instock, db_orderdetail.quantity, db_orderdetail.price as totalPrice, db_orderdetail.note, db_orderdetail.created_at, db_orderdetail.modified_at
+    select db_orderdetail.id, db_orderdetail.orderid, db_product.\`name\`,db_product_image.image, db_product.price, db_product.instock, db_orderdetail.quantity, db_orderdetail.price as totalPrice, db_orderdetail.note
     from db_orderdetail
     inner join db_product on db_product.id = db_orderdetail.productid
     inner join db_product_image on db_product_image.productID = db_orderdetail.productid
@@ -93,7 +93,7 @@ const getCustomerOrderbyId = async (id) => {
     `
     const orderCode = await db.queryOne(sqlOrderCode, id)
     const sqlOrderDetail = `
-    select db_orderdetail.id, db_orderdetail.orderid, db_product.\`name\`,db_product_image.image, db_product.price, db_product.instock, db_orderdetail.quantity, db_orderdetail.price as totalPrice, db_orderdetail.note, db_orderdetail.created_at, db_orderdetail.modified_at
+    select db_orderdetail.id, db_orderdetail.orderid, db_product.\`name\`,db_product_image.image, db_product.price, db_product.instock, db_orderdetail.quantity, db_orderdetail.price as totalPrice, db_orderdetail.note
     from db_orderdetail
     inner join db_product on db_product.id = db_orderdetail.productid
     inner join db_product_image on db_product_image.productID = db_orderdetail.productid
@@ -123,7 +123,7 @@ const getCustomerOrderInfo = async (customerId) => {
     `
     const orderCode = await db.queryOne(sqlOrderCode, customerId)
     const sqlOrderDetail = `
-    select db_orderdetail.id, db_orderdetail.orderid, db_product.\`name\`,db_product_image.image, db_product.price, db_product.instock, db_orderdetail.quantity, db_orderdetail.price as totalPrice, db_orderdetail.note, db_orderdetail.created_at, db_orderdetail.modified_at
+    select db_orderdetail.id, db_orderdetail.orderid, db_product.\`name\`,db_product_image.image, db_product.price, db_product.instock, db_orderdetail.quantity, db_orderdetail.price as totalPrice, db_orderdetail.note
     from db_orderdetail
     inner join db_product on db_product.id = db_orderdetail.productid
     inner join db_product_image on db_product_image.productID = db_orderdetail.productid

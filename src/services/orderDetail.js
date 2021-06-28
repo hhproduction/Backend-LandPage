@@ -1,7 +1,7 @@
 const db = require('../utils/db');
 const getAllOrderDetail = async ({ limit, offset }) => {
     const sql = `
-    select id,orderid,productid,quantity, price, note, created_at, modified_at
+    select id,orderid,productid,quantity, price, note
     from db_orderdetail
     where trash = 0
     limit ?
@@ -22,7 +22,7 @@ const getAllOrderDetail = async ({ limit, offset }) => {
 }
 const getOrderDetailbyId = async (id) => {
     const sql = `
-    select id,orderid,productid,quantity, price, note, created_at, modified_at
+    select id,orderid,productid,quantity, price, note
     from db_orderdetail
     where trash = 0 and id = ?
     `

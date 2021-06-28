@@ -6,7 +6,7 @@ const { s3 } = require('../middlewares/multer')
 const getAccountbyId = async (req, res) => {
     const token = req.headers.authorization.split(' ')[1]
     const decodedToken = security.verifyToken(token)
-    const adminId = decodedToken.adminID
+    const adminId = decodedToken.data.adminID
     const { data, avatar } = await accountService.getAccountbyId(adminId)
     res.send({
         status: 1,
@@ -14,29 +14,6 @@ const getAccountbyId = async (req, res) => {
         avatar
     })
 }
-// const createAccount = async (newAccount) => {
-//     if (!newAccount.username) {
-//         const result = {
-//             status: 0,
-//             message: 'Account need to be filled'
-//         }
-//         return result;
-//     }
-//     if (!newAccount.password || newAccount.password.length < 6) {
-//         const result = {
-//             status: 0,
-//             message: 'Pass length must be greater than 6'
-//         }
-//         return result;
-//     }
-
-//     const result = {
-//         status: 1,
-//         message: await accountService.createAccount(newAccount)
-
-//     }
-//     return result;
-// }
 const uploadAdminAvatar = async (req, res, next) => {
     const file = req.file;
     const token = req.headers.authorization.split(' ')[1]
@@ -122,7 +99,6 @@ module.exports = {
     getAccountbyId,
     updateAccountInforByID,
     updatePasswordByID,
-    // createAccount,
     uploadAdminAvatar,
     deleteAdminAvatarByID
     // deleteAccount,

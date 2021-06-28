@@ -2,7 +2,7 @@ const db = require('../utils/db')
 const uuidv4 = require('uuid')
 const getAllNews = async ({ limit, offset }) => {
     const sql = `
-    select db_news.id, db_news.\`title\`, db_news.created_at,db_news.created_by, db_news.modified_at,db_news.modified_by,db_news.\`status\`,db_news_image.image
+    select db_news.id, db_news.\`title\`,db_news.\`content\`, db_news.created_at,db_news.created_by, db_news.modified_at,db_news.modified_by,db_news.\`status\`,db_news_image.image
     from db_news, db_news_image
     where db_news.id = newsID
     and db_news.trash = 0
@@ -24,7 +24,7 @@ const getAllNews = async ({ limit, offset }) => {
 }
 const getNewsById = async (id) => {
     const sql = `
-    select db_news.id, db_news.\`title\`, db_news.\`detail\` ,db_news.videoUrl, db_news.created_at,db_news.created_by, db_news.modified_at,db_news.modified_by,db_news.\`status\`
+    select db_news.id, db_news.\`title\`,db_news.\`content\` , db_news.\`detail\` ,db_news.videoUrl, db_news.created_at,db_news.created_by, db_news.modified_at,db_news.modified_by,db_news.\`status\`
     from db_news
     where db_news.trash = 0 and db_news.id=?;    
     `
@@ -42,12 +42,12 @@ const getNewsById = async (id) => {
     }
 }
 
-const createNews = async ({ title, detail, videoUrl }) => {
+const createNews = async ({ title, content, detail, videoUrl }) => {
     const sql = `
-    insert into db_news (id, title, \`detail\`,  videoUrl)
-    values(uuid(),?,?,?);
+    insert into db_news (id, title,\`content\`, \`detail\`,  videoUrl)
+    values(uuid(),?,?,?,?);
     `
-    await db.query(sql, [title, detail, videoUrl])
+    await db.query(sql, [title, content, detail, videoUrl])
 }
 const createNewsImage = async (files, id) => {
     var values = new Array();
@@ -60,10 +60,11 @@ const createNewsImage = async (files, id) => {
     `
     await db.query(sql, [values])
 }
-const updateNewsByID = async ({ title, detail, videoUrl }) => {
+const updateNewsByID = async ({ title, content, detail, videoUrl }) => {
     const sql = `
 update db_news
 set \`title\` = ?, 
+ \`content\`=?,
  detail=?
  videoUrl =?,
  detail = ?, 
@@ -75,7 +76,7 @@ set \`title\` = ?,
  catid = ? 
  where id = ? and trash = 0;
  `
-    await db.query(sql, [title, detail, videoUrl])
+    await db.query(sql, [title,content, detail, videoUrl])
 }
 
 const deleteNewsByID = async (id) => {
