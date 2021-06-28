@@ -135,20 +135,27 @@ const createProductImage = async (files, id) => {
     `
     await db.query(sql, [values])
 }
-const updateProductByID = async ({ name, videoUrl, detail, feedBack, producer, instock, number_buy, price, catid, productID }) => {
+const updateProductByID = async ({ name, videoUrl, detail, feedBack, producer, instock, price, catid, productID }) => {
+    const sqlCountBuy = `
+    select sum(quantity) as number_buy
+    from db_orderdetail
+    inner join db_product on db_product.id = db_orderdetail.productid
+    where db_orderdetail.productid = ?
+    `
+    const number_buy = await db.queryOne(sqlCountBuy, [productID])
     const sql = `
-update db_product
-set \`name\` = ?, 
- videoUrl =?,
- detail = ?, 
- feedBack =?,
- producer = ?, 
- instock = ?, 
- number_buy = ?, 
- price = ?,  
- catid = ? 
- where id = ? and trash = 0;
- `
+    update db_product
+    set \`name\` = ?, 
+    videoUrl =?,
+    detail = ?, 
+    feedBack =?,
+    producer = ?, 
+    instock = ?, 
+    number_buy = ?, 
+    price = ?,  
+    catid = ? 
+    where id = ? and trash = 0;
+    `
     await db.query(sql, [name, videoUrl, detail, feedBack, producer, instock, number_buy, price, catid, productID])
 }
 const deleteProductByID = async (id) => {
