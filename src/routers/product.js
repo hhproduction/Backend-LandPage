@@ -2,7 +2,7 @@ const Route = require('express').Router();
 const productController = require('../controller/product')
 const { Trycatch } = require('../middlewares/errorHandle')
 const { requireLogin, requireRole } = require('../middlewares/auth')
-const store = require('../middlewares/multer')
+const {store} = require('../middlewares/multer')
 Route.get('/',
   Trycatch(productController.getAllproduct));
 
@@ -18,14 +18,15 @@ Route.get('/search/:name',
 Route.post('/',
   requireLogin,
   requireRole("ADMIN"),
+  store.array('imagesProduct', 15),
   Trycatch(productController.createProduct));
 
-Route.post('/upload_multiple/:id',
-  requireLogin,
-  requireRole('ADMIN'),
-  store.storeProduct.array('imagesProduct', 15),
-  Trycatch(productController.uploadMultipleProductImage)
-);
+// Route.post('/upload_multiple/:id',
+//   requireLogin,
+//   requireRole('ADMIN'),
+  
+//   Trycatch(productController.uploadMultipleProductImage)
+// );
 Route.post('/productImage/delete',
   requireLogin,
   requireRole('ADMIN'),

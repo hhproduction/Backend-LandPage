@@ -28,26 +28,23 @@ const getProductByName = async (req, res) => {
     })
 }
 const createProduct = async (req, res) => {
-    await productService.createProduct(req.body)
-    res.send({
-        status: 1,
-        message: "Product was created successful."
-    })
-}
-const uploadMultipleProductImage = async (req, res, next) => {
     const files = req.files;
-    const { id } = req.params;
+    const info = req.body
     if (!files) {
         const error = new Error('Please choose files');
         return next(error)
     }
+    const id = await productService.createProduct(req.body)
     await productService.createProductImage(files, id)
     res.send({
         status: 1,
-        message: "upload image successfull",
+        message: "Product was created successfull",
         data: files
     })
 }
+// const uploadMultipleProductImage = async (req, res, next) => {
+    
+// }
 
 const updateProduct = async (req, res) => {
     const { id } = req.params;
@@ -111,7 +108,7 @@ module.exports = {
     getAllproduct,
     getProductById,
     createProduct,
-    uploadMultipleProductImage,
+    // uploadMultipleProductImage,
     updateProduct,
     deleteProduct,
     getProductByCategoryID,

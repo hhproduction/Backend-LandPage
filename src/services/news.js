@@ -47,7 +47,16 @@ const createNews = async ({ title, content, detail, videoUrl }) => {
     insert into db_news (id, title,\`content\`, \`detail\`,  videoUrl)
     values(uuid(),?,?,?,?);
     `
+    const sqlID=`
+    select id
+    from db_news
+    where title = ?
+    `
     await db.query(sql, [title, content, detail, videoUrl])
+    const {id} = db.queryOne(sqlID,[title])
+    return{
+        id
+    }
 }
 const createNewsImage = async (files, id) => {
     var values = new Array();

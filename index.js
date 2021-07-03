@@ -44,6 +44,7 @@ const orderDetailRouter = require('./src/routers/orderDetail')
 const provinceRouter = require('./src/routers/province')
 const districtRouter = require('./src/routers/district')
 const producerRouter = require('./src/routers/producer')
+const discountRouter = require('./src/routers/discount')
 
 app.use('/api/v1/auth_admin', authAdmin);
 app.use('/api/v1/auth_customer', authCustomer);
@@ -57,7 +58,7 @@ app.use('/api/v1/orderDetail', orderDetailRouter);
 app.use('/api/v1/province', provinceRouter);
 app.use('/api/v1/district', districtRouter);
 app.use('/api/v1/producer', producerRouter);
-
+app.use('/api/v1/discount', discountRouter)
 //Listen
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, (err) => {

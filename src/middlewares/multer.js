@@ -7,25 +7,7 @@ const s3 = new AWS.S3({
     accessKeyId: process.env.AWS_ID,
     secretAccessKey: process.env.AWS_SECRET
 })
-//set storage
-var storageAdmin = multer.memoryStorage({
-    destination: (req, file, cb) => {
-        cb(null, '')
-    },
-    filename: (req, file, cb) => {
-        //image.jpg
-        cb(null, new Date().toISOString().replace(/:/g, '-') + file.originalname)
-    }
-})
-var storageCustomer = multer.memoryStorage({
-    destination: (req, file, cb) => {
-        cb(null, '')
-    },
-    filename: (req, file, cb) => {
-        //image.jpg
-        cb(null, new Date().toISOString().replace(/:/g, '-') + file.originalname)
-    }
-})
+
 
 const fileFilter = (req, file, cb) => {
     //reject file
@@ -37,7 +19,7 @@ const fileFilter = (req, file, cb) => {
     }
 }
 
-const storeProduct = multer({
+const store = multer({
     storage: multerS3({
         s3: s3,
         bucket: process.env.AWS_BUCKET_NAME,
@@ -50,39 +32,9 @@ const storeProduct = multer({
     },
     fileFilter,
 })
-const storeAdmin = multer({
-    storage: storageAdmin,
-    limits: {
-        fileSize: 1024 * 1024 * 5
-    },
-    fileFilter,
 
-})
-const storeCustomer = multer({
-    storage: storageCustomer,
-    limits: {
-        fileSize: 1024 * 1024 * 5
-    },
-    fileFilter,
-})
-const storeNews = multer({
-    storage: multerS3({
-        s3: s3,
-        bucket: process.env.AWS_BUCKET_NAME,
-        key: (req, file, cb) => {
-            cb(null, path.basename(file.originalname, path.extname(file.originalname))+'-'+Date.now() +path.extname(file.originalname))
-        }
-    }),
-    limits: {
-        fileSize: 1024 * 1024 * 5
-    },
-    fileFilter,
-})
 
 module.exports = {
-    storeProduct,
-    storeAdmin,
-    storeCustomer,
-    storeNews,
+    store,
     s3
 }

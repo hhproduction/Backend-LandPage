@@ -18,27 +18,30 @@ const getNewsById = async (req, res) => {
     })
 }
 const createNews = async (req, res) => {
-    await newsService.createNews(req.body)
-    res.send({
-        status: 1,
-        message: "news was created successful."
-    })
-}
-const uploadMultipleNewsImage = async (req, res, next) => {
     const files = req.files;
-    const { id } = req.params;
     if (!files) {
         const error = new Error('Please choose files');
         return next(error)
     }
-    s3
+    const id = await newsService.createNews(req.body)
     await newsService.createNewsImage(files, id)
     res.send({
         status: 1,
-        message: "upload image successfull",
+        message: "news was created successful.",
         data: files
     })
 }
+// const uploadMultipleNewsImage = async (req, res, next) => {
+    
+//     const { id } = req.params;
+    
+    
+//     res.send({
+//         status: 1,
+//         message: "upload image successfull",
+//         data: files
+//     })
+// }
 
 const updateNews = async (req, res) => {
     const { id } = req.params;
@@ -84,7 +87,7 @@ module.exports = {
     getAllNews,
     getNewsById,
     createNews,
-    uploadMultipleNewsImage,
+    // uploadMultipleNewsImage,
     updateNews,
     deleteNews,
     deleteNewsImage

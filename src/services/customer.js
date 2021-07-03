@@ -78,11 +78,16 @@ const createCustomer = async ({ fullname, username, password, birth, gender, pro
         insert into db_customer (id, fullname, username, \`password\`, birth, gender, province, district, address, phone, email  )
         values(uuid(),?,?,?,?,?,?,?,?,?,?);
         `
+        const sqlID=`
+        select id
+        from db_customer
+        where username = ?
+        `
         const encryptedPassword = await security.generatePassword(password)
         await db.query(sql, [fullname, username, encryptedPassword, birth, gender, province, district, address, phone, email])
+        const {id} = await db.queryOne(sqlID,username)
         return {
-            status: 1,
-            message: "The account is sign up successfull."
+            id
         }
     }
 

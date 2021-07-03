@@ -1,7 +1,7 @@
 const db = require('../utils/db')
 const getAllProducer = async ({ limit, offset }) => {
     const sql = `
-    select id, name, created_at, created_by, modified_at, modified_by,\`status\`
+    select id, name, image, created_at, created_by, modified_at, modified_by,\`status\`
     from db_producer
     where trash = 0
     limit ?
@@ -19,20 +19,21 @@ const getAllProducer = async ({ limit, offset }) => {
         }
     }
 }
-const createProducer = async ({ name }) => {
+const createProducer = async ({ name }, image) => {
     const sql = `
-    insert into db_producer (id,  \`name\`)
-    values(uuid(),?);
+    insert into db_producer (id,  \`name\`, image)
+    values(uuid(),?,?);
     `
-    await db.query(sql, [name])
+    await db.query(sql, [name, image])
 }
-const updateProducerByID = async ({ name, id }) => {
+const updateProducerByID = async ({ name, image, id }) => {
     const sql = `
     update db_producer
-    set \`name\` = ?
+    set \`name\` = ?,
+    image = ?
     where id = ? and trash =0;
     `
-    await db.query(sql, [name, id])
+    await db.query(sql, [name, image, id])
 }
 const deleteProducerByID = async ({ id }) => {
     const sql = `

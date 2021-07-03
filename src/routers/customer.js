@@ -1,7 +1,7 @@
 const Route = require('express').Router();
 const customerController = require('../controller/customer')
 const { Trycatch } = require('../middlewares/errorHandle')
-const store = require('../middlewares/multer')
+const { store } = require('../middlewares/multer')
 const { requireLogin, requireRole, requireCustomerLogin } = require('../middlewares/auth')
 Route.get('/',
     requireLogin,
@@ -15,10 +15,13 @@ Route.get('/:customerId',
     requireRole('ADMIN'),
     Trycatch(customerController.getCustomerbyId))
 
-Route.post('/', Trycatch(customerController.createCustomer));
-Route.post('/upload',
-    store.storeCustomer.single('customerAvatar'),
-    Trycatch(customerController.uploadCustomerAvatar));
+Route.post('/',
+    store.single('customerAvatar'),
+    Trycatch(customerController.createCustomer
+    ));
+// Route.post('/upload',
+
+//     Trycatch(customerController.uploadCustomerAvatar));
 Route.post('/customerAvatar/delete',
     requireCustomerLogin,
     Trycatch(customerController.deleteCustomerAvatarByID)
