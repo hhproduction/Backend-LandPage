@@ -40,6 +40,7 @@ const getAccountbyId = async (id) => {
         avatar
     }
 }
+
 const createAdminAvatar = async (path, mimetype, size, id) => {
     const sql = `
     insert into db_admin_avatar (\`id\`,\`adminID\`, \`avatar\`,\`type\`,\`size\`) values 
@@ -121,6 +122,7 @@ module.exports = {
     updateAccountInforByID,
     updatePasswordByID,
     getAccountbyId,
+    // createAccount,
     createAdminAvatar,
     deleteAdminAvatarByID,
     // getAllAccount,

@@ -34,7 +34,7 @@ const createProduct = async (req, res) => {
         const error = new Error('Please choose files');
         return next(error)
     }
-    const id = await productService.createProduct(req.body)
+    const {id} = await productService.createProduct(req.body)
     await productService.createProductImage(files, id)
     res.send({
         status: 1,

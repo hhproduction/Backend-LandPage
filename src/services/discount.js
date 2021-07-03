@@ -1,6 +1,6 @@
 const db = require('../utils/db')
 
-const getAllDiscount = ({ limit, offset }) => {
+const getAllDiscount = async ({ limit, offset }) => {
     const sql = `
     select db_discount.id, db_product.\`name\`, db_discount.discount_condition, db_discount.percent, db_discount.created_at,db_discount.created_by,db_discount.modified_at,db_discount.modified_by
     from db_discount
@@ -22,7 +22,7 @@ const getAllDiscount = ({ limit, offset }) => {
         }
     }
 }
-const getDisCountByProduct = (productID) => {
+const getDisCountByProduct = async (productID) => {
     const sql = `
     select db_discount.id, db_product.\`name\`, db_discount.discount_condition, db_discount.percent, db_discount.created_at,db_discount.created_by,db_discount.modified_at,db_discount.modified_by
     from db_discount
@@ -34,14 +34,14 @@ const getDisCountByProduct = (productID) => {
         data
     }
 }
-const createDiscount = ({ productid, discount_condition, percent }) => {
+const createDiscount = async ({ productid, discount_condition, percent }) => {
     const sql = `
     insert db_discount (id, productid, discount_condition, percent)
     values(uuid(),?,?,?);
     `
     await db.query(sql, [productid, discount_condition, percent])
 }
-const updateDiscountByID = ({ productid, discount_condition, percent }, id) => {
+const updateDiscountByID = async ({ productid, discount_condition, percent }, id) => {
     const sql = `
     update db_discount
     set productid=?,
@@ -51,7 +51,7 @@ const updateDiscountByID = ({ productid, discount_condition, percent }, id) => {
     `
     await db.query(sql, [productid, discount_condition, percent, id])
 }
-const deleteDiscountByID = (id)=>{
+const deleteDiscountByID = async (id)=>{
     const sql=`
     delete from db_discount
     where id = ?

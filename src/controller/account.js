@@ -14,31 +14,7 @@ const getAccountbyId = async (req, res) => {
         avatar
     })
 }
-const uploadAdminAvatar = async (req, res, next) => {
-    const file = req.file;
-    const token = req.headers.authorization.split(' ')[1]
-    const decodedToken = security.verifyToken(token)
-    const adminId = decodedToken.adminID
-    if (!file) {
-        const error = new Error('Please choose file')
-        return next(error)
-    }
 
-    let myFile = file.originalname.split(".")
-    const fileType = myFile[myFile.length - 1]
-    const params = {
-        Bucket: process.env.AWS_BUCKET_NAME,
-        Key: `${uuid.v4()}.${fileType}`,
-        Body: file.buffer
-    }
-    s3.upload(params, async (error, data) => {
-        if (error) {
-            res.status(500).send(error)
-        }
-        await accountService.createAdminAvatar(data.Location, file.mimetype, file.size, adminId)
-        res.status(200).send(data)
-    })
-}
 const updateAccountInforByID = async (req, res) => {
     const { id } = req.params;
     await accountService.updateAccountInforByID(req.body, id)
@@ -73,14 +49,14 @@ const deleteAdminAvatarByID = async (req, res) => {
         Key: key
     }
     s3.deleteObject(params, (err, data) => {
-        if(err){
+        if (err) {
             res.status(499).send({
                 message: err
             })
         }
-        else{
+        else {
             res.status(200).send({
-                message:"delete image successful."
+                message: "delete image successful."
             })
         }
     })
@@ -99,7 +75,8 @@ module.exports = {
     getAccountbyId,
     updateAccountInforByID,
     updatePasswordByID,
-    uploadAdminAvatar,
+    // createAccount,
+    // uploadAdminAvatar,
     deleteAdminAvatarByID
     // deleteAccount,
 }

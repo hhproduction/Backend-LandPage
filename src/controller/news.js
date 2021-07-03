@@ -23,7 +23,7 @@ const createNews = async (req, res) => {
         const error = new Error('Please choose files');
         return next(error)
     }
-    const id = await newsService.createNews(req.body)
+    const {id} = await newsService.createNews(req.body)
     await newsService.createNewsImage(files, id)
     res.send({
         status: 1,

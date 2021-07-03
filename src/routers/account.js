@@ -2,18 +2,14 @@ const Route = require('express').Router();
 const accountController = require('../controller/account')
 const { requireLogin, requireRole } = require('../middlewares/auth')
 const { Trycatch } = require('../middlewares/errorHandle')
-const {store} = require('../middlewares/multer')
+// const {store} = require('../middlewares/multer')
 // Route.get('/', TryCatch(accountController.getAllAccount))
 Route.get('/info',
     requireLogin,
     requireRole('ADMIN'),
     Trycatch(accountController.getAccountbyId)
 );
-Route.post('/upload',
-    requireLogin,
-    requireRole('ADMIN'),
-    store.single('adminAvatar'),
-    Trycatch(accountController.uploadAdminAvatar));
+
 Route.post('/adminAvatar/delete',
     requireLogin,
     requireRole('ADMIN'),
