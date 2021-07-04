@@ -127,7 +127,7 @@ const createProduct = async ({ catid, name, videoUrl, description, detail, feedB
     from db_product
     where \`name\` = ?;
     `
-    await db.query(sql, [catid, name, videoUrl, description, detail, feedBack, producer, instock, number_buy, price])
+    await db.query(sql, [catid, name, videoUrl, description, detail, feedBack, producer, Number(instock), Number(number_buy), Number(price)])
     const {id} = await db.queryOne(sqlID,[name])
     return {
         id
