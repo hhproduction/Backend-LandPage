@@ -33,6 +33,7 @@ const createProduct = async (req, res) => {
         const error = new Error('Please choose files');
         return next(error)
     }
+    console.log(files);
     const {id} = await productService.createProduct(req.body)
     await productService.createProductImage(files, id)
     res.send({
