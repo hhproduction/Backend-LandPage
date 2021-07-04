@@ -117,18 +117,18 @@ const getProductByProducerID = async (categoryId, { limit, offset }) => {
         }
     }
 }
-const createProduct = async ({ catid, name, videoUrl, description, detail, feedBack, producer, instock, number_buy, price }) => {
+const createProduct = async ({ catid, name, videoUrl, description, detail, feedBack, producer, instock,  price }) => {
     const sql = `
     insert into db_product (id, catid, \`name\`,  videoUrl,description, detail, feedBack, producer, instock, number_buy, price)
-    values(uuid(),?,?,?,?,?,?,?,?,?,?);
+    values(uuid(),?,?,?,?,?,?,?,?,0,?);
     `
-    const sqlID=`
+    const sqlID = `
     select id
     from db_product
     where \`name\` = ?;
     `
-    await db.query(sql, [catid, name, videoUrl, description, detail, feedBack, producer, Number(instock), Number(number_buy), Number(price)])
-    const {id} = await db.queryOne(sqlID,[name])
+    await db.query(sql, [catid, name, videoUrl, description, detail, feedBack, producer, Number(instock), Number(price)])
+    const { id } = await db.queryOne(sqlID, [name])
     return {
         id
     }
