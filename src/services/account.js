@@ -122,7 +122,7 @@ module.exports = {
     updateAccountInforByID,
     updatePasswordByID,
     getAccountbyId,
-    createAccount,
+    // createAccount,
     createAdminAvatar,
     deleteAdminAvatarByID,
     // getAllAccount,
