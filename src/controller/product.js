@@ -29,7 +29,6 @@ const getProductByName = async (req, res) => {
 }
 const createProduct = async (req, res) => {
     const files = req.files;
-    const info = req.body
     if (!files) {
         const error = new Error('Please choose files');
         return next(error)
