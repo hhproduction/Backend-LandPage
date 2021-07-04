@@ -1,5 +1,4 @@
 const producerService = require('../services/producer')
-
 const getAllProducer = async (req, res) => {
     const { data, metadata } = await producerService.getAllProducer(req.pagination)
     res.send({
@@ -14,22 +13,11 @@ const createProducer = async (req, res) => {
         const error = new Error('Please choose file')
         return next(error)
     }
-    let myFile = file.originalname.split(".")
-    const fileType = myFile[myFile.length - 1]
-    const params = {
-        Bucket: process.env.AWS_BUCKET_NAME,
-        Key: `${uuid.v4()}.${fileType}`,
-        Body: file.buffer
-    }
-    s3.upload(params, async (error, data) => {
-        if (error) {
-            res.status(500).send(error)
-        }
-        await producerService.createProducer(req.body, file)
-        res.status(200).send({
-            data:data,
-            message: "Producer was created successful."
-        })
+    await producerService.createProducer(req.body, file)
+    res.send({
+        status: 1,
+        message: "Producer was created successful.",
+        data: file
     })
 }
 const updateProducerByID = async (req, res) => {

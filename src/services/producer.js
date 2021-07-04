@@ -24,7 +24,7 @@ const createProducer = async ({ name }, image) => {
     insert into db_producer (id,  \`name\`, image)
     values(uuid(),?,?);
     `
-    await db.query(sql, [name, image])
+    await db.query(sql, [name, image.location])
 }
 const updateProducerByID = async ({ name, image, id }) => {
     const sql = `
