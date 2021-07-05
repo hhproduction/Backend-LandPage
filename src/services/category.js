@@ -34,12 +34,12 @@ const getCategoryByID = async (id) => {
     const data = await db.queryOne(sql, [id])
     return { data }
 }
-const createCategory = async ({ name, level }) => {
+const createCategory = async ({ name, parent_id }) => {
     const sql = `
     insert into db_category (parent_id, \`name\` )
     values(?,?);
     `
-    const data = await db.query(sql, [name, level])
+    const data = await db.query(sql, [parent_id, name])
     return data
 }
 const updateCategoryByID = async ({ name, level, id }) => {

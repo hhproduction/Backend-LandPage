@@ -4,8 +4,8 @@ const getAllProduct = async ({ limit, offset }) => {
     const sql = `
     select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
     from db_product
-    inner join db_category.id = db_product.catid
-    inner join db_producer.id = db_product.producer
+    inner join db_category on db_category.id = db_product.catid
+    inner join db_producer on db_producer.id = db_product.producer
     where db_product.trash = 0
     limit ?
     offset ?;
@@ -71,8 +71,8 @@ const getProductByName = async (name, { limit, offset }) => {
     const sql = `
     select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
     from db_product
-    inner join db_category.id = db_product.catid
-    inner join db_producer.id = db_product.producer
+    inner join db_category on db_category.id = db_product.catid
+    inner join db_producer on db_producer.id = db_product.producer
     where db_product.trash = 0 and db_product.\`name\` LIKE ?
     limit ?
     offset ?;
@@ -124,8 +124,8 @@ const getProductByCategoryID = async (categoryId, { limit, offset }) => {
     const sqlChild = `
     select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
     from db_product
-    inner join db_category.id = db_product.catid
-    inner join db_producer.id = db_product.producer
+    inner join db_category on db_category.id = db_product.catid
+    inner join db_producer on db_producer.id = db_product.producer
     where db_product.trash = 0 and db_product.catid=? 
     limit ?
     offset ?;
@@ -133,8 +133,8 @@ const getProductByCategoryID = async (categoryId, { limit, offset }) => {
     const sqlParent = `
     select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
     from db_product
-    inner join db_category.id = db_product.catid
-    inner join db_producer.id = db_product.producer
+    inner join db_category on db_category.id = db_product.catid
+    inner join db_producer on db_producer.id = db_product.producer
     where db_product.trash = 0 and db_category.parent_id=? 
     limit ?
     offset ?;
@@ -169,7 +169,7 @@ const getProductByCategoryID = async (categoryId, { limit, offset }) => {
         const countsql = `
         select count(db_product.id) as total 
         from db_product
-        inner db_category.id = db_product.catid
+        inner join db_category on db_category.id = db_product.catid
         where db_product.trash =0 and db_category.parent_id=?
         `
         const { total } = await db.queryOne(countsql, [parent_id])
@@ -219,8 +219,8 @@ const getProductByProducerID = async (producerId, { limit, offset }) => {
     const sql = `
     select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
     from db_product
-    inner join db_category.id = db_product.catid
-    inner join db_producer.id = db_product.producer
+    inner join db_category on db_category.id = db_product.catid
+    inner join db_producer on db_producer.id = db_product.producer
     where db_product.trash = 0 and db_product.producer=? 
     limit ?
     offset ?;
