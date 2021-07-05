@@ -1,27 +1,32 @@
 const db = require('../utils/db')
-const getAllCategory = async ({ limit, offset }) => {
+const getAllCategory = async () => {
     const sql = `
-    select id, \`name\`, \`level\`,created_at, created_by, modified_at, modified_by
+    select id, parent_id, \`name\`,created_at, created_by, modified_at, modified_by
     from db_category
-    where trash = 0
-    limit ?
-    offset ?;
+    where trash = 0 and parent_id = 0
     `
-    const data = await db.queryMulti(sql, [limit, offset])
-    const countsql = `
-    select count(id) as total from db_category`
-    const { total } = await db.queryOne(countsql)
+    const sqlChild = `
+    select id, parent_id, \`name\`,created_at, created_by, modified_at, modified_by
+    from db_category
+    where trash = 0 and parent_id = ?
+    `
+    var data = []
+    const parentCat = await db.queryMulti(sql)
+    for (let i = 0; i < parentCat.length; i++) {
+        const childCat = await db.queryMulti(sqlChild,[parentCat[i].id])
+        data.push({
+            name: parentCat[i].name,
+            id: parentCat[i].id,
+            children: childCat
+        })
+    }
     return {
-        data,
-        metadata: {
-            length: data.length,
-            total
-        }
+        data
     }
 }
 const getCategoryByID = async (id) => {
     const sql = `
-    select id, \`name\`, \`level\`,created_at, created_by, modified_at, modified_by
+    select id, parent_id, \`name\`,created_at, created_by, modified_at, modified_by
     from db_category 
     where id = ? and trash = 0
     limit 1;
@@ -31,8 +36,8 @@ const getCategoryByID = async (id) => {
 }
 const createCategory = async ({ name, level }) => {
     const sql = `
-    insert into db_category (id, \`name\`, \`level\` )
-    values(uuid(),?,?);
+    insert into db_category (parent_id, \`name\` )
+    values(?,?);
     `
     const data = await db.query(sql, [name, level])
     return data
@@ -41,7 +46,7 @@ const updateCategoryByID = async ({ name, level, id }) => {
     const sql = `
     update db_category 
     set \`name\` = ?,
-        \`level\` = ?
+        parent_id = ?
     where id = ? and trash = 0;
     `
     await db.query(sql, [name, level, id])
