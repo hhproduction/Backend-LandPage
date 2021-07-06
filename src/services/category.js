@@ -18,6 +18,10 @@ const getAllCategory = async () => {
             name: parentCat[i].name,
             id: parentCat[i].id,
             parent_id: parentCat[i].parent_id,
+            created_at: parentCat[i].created_at,
+            created_by: parentCat[i].created_by,
+            modified_at: parentCat[i].modified_at,
+            modified_by: parentCat[i].modified_by,
             children: childCat
         })
     }
