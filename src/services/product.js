@@ -2,7 +2,7 @@ const db = require('../utils/db')
 const uuidv4 = require('uuid')
 const getAllProduct = async ({ limit, offset }) => {
     const sql = `
-    select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
+    select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer,db_product.description, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
     from db_product
     inner join db_category on db_category.id = db_product.catid
     inner join db_producer on db_producer.id = db_product.producer
@@ -27,6 +27,7 @@ const getAllProduct = async ({ limit, offset }) => {
             name: products[i].name,
             category: products[i].category,
             producer: products[i].producer,
+            description: products[i].description,
             instock: products[i].instock,
             number_buy: products[i].number_buy,
             price: products[i].price,
@@ -69,7 +70,7 @@ const getProductById = async (id) => {
 }
 const getProductByName = async (name, { limit, offset }) => {
     const sql = `
-    select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
+    select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer,db_product.description, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
     from db_product
     inner join db_category on db_category.id = db_product.catid
     inner join db_producer on db_producer.id = db_product.producer
@@ -96,6 +97,7 @@ const getProductByName = async (name, { limit, offset }) => {
             name: products[i].name,
             category: products[i].category,
             producer: products[i].producer,
+            description: products[i].description,
             instock: products[i].instock,
             number_buy: products[i].number_buy,
             price: products[i].price,
@@ -122,7 +124,7 @@ const getProductByCategoryID = async (categoryId, { limit, offset }) => {
     where id = ? and trash = 0
     `
     const sqlChild = `
-    select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
+    select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer, db_product.description, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
     from db_product
     inner join db_category on db_category.id = db_product.catid
     inner join db_producer on db_producer.id = db_product.producer
@@ -131,7 +133,7 @@ const getProductByCategoryID = async (categoryId, { limit, offset }) => {
     offset ?;
     `
     const sqlParent = `
-    select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
+    select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer, db_product.description, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
     from db_product
     inner join db_category on db_category.id = db_product.catid
     inner join db_producer on db_producer.id = db_product.producer
@@ -155,6 +157,7 @@ const getProductByCategoryID = async (categoryId, { limit, offset }) => {
                 name: products[i].name,
                 category: products[i].category,
                 producer: products[i].producer,
+                description: products[i].description,
                 instock: products[i].instock,
                 number_buy: products[i].number_buy,
                 price: products[i].price,
@@ -189,6 +192,7 @@ const getProductByCategoryID = async (categoryId, { limit, offset }) => {
                 name: products[i].name,
                 category: products[i].category,
                 producer: products[i].producer,
+                description: products[i].description,
                 instock: products[i].instock,
                 number_buy: products[i].number_buy,
                 price: products[i].price,
@@ -217,7 +221,7 @@ const getProductByCategoryID = async (categoryId, { limit, offset }) => {
 }
 const getProductByProducerID = async (producerId, { limit, offset }) => {
     const sql = `
-    select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
+    select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer, db_product.description, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
     from db_product
     inner join db_category on db_category.id = db_product.catid
     inner join db_producer on db_producer.id = db_product.producer
@@ -239,6 +243,7 @@ const getProductByProducerID = async (producerId, { limit, offset }) => {
             name: products[i].name,
             category: products[i].category,
             producer: products[i].producer,
+            description: products[i].description,
             instock: products[i].instock,
             number_buy: products[i].number_buy,
             price: products[i].price,
