@@ -5,6 +5,8 @@ const { requireLogin, requireRole } = require('../middlewares/auth')
 const { Trycatch } = require('../middlewares/errorHandle')
 Route.get('/',
     Trycatch(categoryController.getAllCategory))
+Route.get('/no_tree',
+    Trycatch(categoryController.getAllCategoryNoTree))
 Route.get('/:id',
     Trycatch(categoryController.getCategoryByID))
 Route.post('/',
