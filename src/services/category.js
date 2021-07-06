@@ -13,10 +13,11 @@ const getAllCategory = async () => {
     var data = []
     const parentCat = await db.queryMulti(sql)
     for (let i = 0; i < parentCat.length; i++) {
-        const childCat = await db.queryMulti(sqlChild,[parentCat[i].id])
+        const childCat = await db.queryMulti(sqlChild, [parentCat[i].id])
         data.push({
             name: parentCat[i].name,
             id: parentCat[i].id,
+            parent_id: parentCat[i].parent_id,
             children: childCat
         })
     }
