@@ -8,6 +8,38 @@ const getAllproduct = async (req, res) => {
         data
     })
 }
+const getAllProductSortedByNumberBuy = async (req, res) => {
+    const { data, metadata } = await productService.getAllProductSortedByNumberBuy(req.pagination)
+    res.send({
+        status: 1,
+        metadata,
+        data
+    })
+}
+const getAllProductSortedByPriceASC = async (req, res) => {
+    const { data, metadata } = await productService.getAllProductSortedByPriceASC(req.pagination)
+    res.send({
+        status: 1,
+        metadata,
+        data
+    })
+}
+const getAllProductSortedByPriceDESC = async (req, res) => {
+    const { data, metadata } = await productService.getAllProductSortedByPriceDESC(req.pagination)
+    res.send({
+        status: 1,
+        metadata,
+        data
+    })
+}
+const getAllProductSortedByTime = async (req, res) => {
+    const { data, metadata } = await productService.getAllProductSortedByTime(req.pagination)
+    res.send({
+        status: 1,
+        metadata,
+        data
+    })
+}
 const getProductById = async (req, res) => {
     const { id } = req.params;
     const { data, listImage } = await productService.getProductById(id)
@@ -72,6 +104,42 @@ const getProductByCategoryID = async (req, res) => {
         data
     })
 }
+const getProductByCategoryIDSortedByNumberBuy = async (req, res) => {
+    const { categoryId } = req.params;
+    const { data, metadata } = await productService.getProductByCategoryIDSortedByNumberBuy(categoryId, req.pagination)
+    res.send({
+        status: 1,
+        metadata,
+        data
+    })
+}
+const getProductByCategoryIDSortedByPriceASC = async (req, res) => {
+    const { categoryId } = req.params;
+    const { data, metadata } = await productService.getProductByCategoryIDSortedByPriceASC(categoryId, req.pagination)
+    res.send({
+        status: 1,
+        metadata,
+        data
+    })
+}
+const getProductByCategoryIDSortedByPriceDESC = async (req, res) => {
+    const { categoryId } = req.params;
+    const { data, metadata } = await productService.getProductByCategoryIDSortedByPriceDESC(categoryId, req.pagination)
+    res.send({
+        status: 1,
+        metadata,
+        data
+    })
+}
+const getProductByCategoryIDSortedByTime = async (req, res) => {
+    const { categoryId } = req.params;
+    const { data, metadata } = await productService.getProductByCategoryIDSortedByTime(categoryId, req.pagination)
+    res.send({
+        status: 1,
+        metadata,
+        data
+    })
+}
 const getProductByProducerID = async (req, res) => {
     const { producerId } = req.params;
     const { data, metadata } = await productService.getProductByProducerID(producerId, req.pagination)
@@ -106,12 +174,20 @@ const deleteProductImage = async (req, res) => {
 
 module.exports = {
     getAllproduct,
+    getAllProductSortedByNumberBuy,
+    getAllProductSortedByPriceASC,
+    getAllProductSortedByPriceDESC,
+    getAllProductSortedByTime,
     getProductById,
     createProduct,
     // uploadMultipleProductImage,
     updateProduct,
     deleteProduct,
     getProductByCategoryID,
+    getProductByCategoryIDSortedByNumberBuy,
+    getProductByCategoryIDSortedByPriceASC,
+    getProductByCategoryIDSortedByPriceDESC,
+    getProductByCategoryIDSortedByTime,
     getProductByName,
     getProductByProducerID,
     deleteProductImage

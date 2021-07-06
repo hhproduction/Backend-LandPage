@@ -47,6 +47,206 @@ const getAllProduct = async ({ limit, offset }) => {
         }
     }
 }
+const getAllProductSortedByNumberBuy = async ({ limit, offset }) => {
+    const sql = `
+    select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer,db_product.description, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
+    from db_product
+    inner join db_category on db_category.id = db_product.catid
+    inner join db_producer on db_producer.id = db_product.producer
+    where db_product.trash = 0
+    order by 
+		db_product.number_buy DESC,
+        db_product.\`name\` DESC
+    limit ?
+    offset ?;
+    `
+    const sqlImageList = `
+    select image
+    from db_product_image
+    where productID = ?
+    `
+    var data = []
+    const products = await db.queryMulti(sql, [limit, offset])
+    const countsql = `
+    select count(id) as total from db_product`
+    const { total } = await db.queryOne(countsql)
+    for (let i = 0; i < products.length; i++) {
+        const imageList = await db.queryMulti(sqlImageList, products[i].id)
+        data.push({
+            id: products[i].id,
+            name: products[i].name,
+            category: products[i].category,
+            producer: products[i].producer,
+            description: products[i].description,
+            instock: products[i].instock,
+            number_buy: products[i].number_buy,
+            price: products[i].price,
+            create_at: products[i].create_at,
+            create_by: products[i].create_by,
+            modified_by: products[i].modified_by,
+            modified_at: products[i].modified_at,
+            status: products[i].status,
+            imageList: imageList
+        })
+    }
+    return {
+        data,
+        metadata: {
+            length: data.length,
+            total
+        }
+    }
+}
+const getAllProductSortedByTime = async ({ limit, offset }) => {
+    const sql = `
+    select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer,db_product.description, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
+    from db_product
+    inner join db_category on db_category.id = db_product.catid
+    inner join db_producer on db_producer.id = db_product.producer
+    where db_product.trash = 0
+    order by 
+		db_product.created_at DESC,
+        db_product.\`name\` DESC
+    limit ?
+    offset ?;
+    `
+    const sqlImageList = `
+    select image
+    from db_product_image
+    where productID = ?
+    `
+    var data = []
+    const products = await db.queryMulti(sql, [limit, offset])
+    const countsql = `
+    select count(id) as total from db_product`
+    const { total } = await db.queryOne(countsql)
+    for (let i = 0; i < products.length; i++) {
+        const imageList = await db.queryMulti(sqlImageList, products[i].id)
+        data.push({
+            id: products[i].id,
+            name: products[i].name,
+            category: products[i].category,
+            producer: products[i].producer,
+            description: products[i].description,
+            instock: products[i].instock,
+            number_buy: products[i].number_buy,
+            price: products[i].price,
+            create_at: products[i].create_at,
+            create_by: products[i].create_by,
+            modified_by: products[i].modified_by,
+            modified_at: products[i].modified_at,
+            status: products[i].status,
+            imageList: imageList
+        })
+    }
+    return {
+        data,
+        metadata: {
+            length: data.length,
+            total
+        }
+    }
+}
+const getAllProductSortedByPriceASC = async ({ limit, offset }) => {
+    const sql = `
+    select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer,db_product.description, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
+    from db_product
+    inner join db_category on db_category.id = db_product.catid
+    inner join db_producer on db_producer.id = db_product.producer
+    where db_product.trash = 0
+    order by 
+		db_product.price ASC,
+        db_product.\`name\` DESC
+    limit ?
+    offset ?;
+    `
+    const sqlImageList = `
+    select image
+    from db_product_image
+    where productID = ?
+    `
+    var data = []
+    const products = await db.queryMulti(sql, [limit, offset])
+    const countsql = `
+    select count(id) as total from db_product`
+    const { total } = await db.queryOne(countsql)
+    for (let i = 0; i < products.length; i++) {
+        const imageList = await db.queryMulti(sqlImageList, products[i].id)
+        data.push({
+            id: products[i].id,
+            name: products[i].name,
+            category: products[i].category,
+            producer: products[i].producer,
+            description: products[i].description,
+            instock: products[i].instock,
+            number_buy: products[i].number_buy,
+            price: products[i].price,
+            create_at: products[i].create_at,
+            create_by: products[i].create_by,
+            modified_by: products[i].modified_by,
+            modified_at: products[i].modified_at,
+            status: products[i].status,
+            imageList: imageList
+        })
+    }
+    return {
+        data,
+        metadata: {
+            length: data.length,
+            total
+        }
+    }
+}
+const getAllProductSortedByPriceDESC = async ({ limit, offset }) => {
+    const sql = `
+    select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer,db_product.description, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
+    from db_product
+    inner join db_category on db_category.id = db_product.catid
+    inner join db_producer on db_producer.id = db_product.producer
+    where db_product.trash = 0
+    order by 
+		db_product.price DESC,
+        db_product.\`name\` DESC
+    limit ?
+    offset ?;
+    `
+    const sqlImageList = `
+    select image
+    from db_product_image
+    where productID = ?
+    `
+    var data = []
+    const products = await db.queryMulti(sql, [limit, offset])
+    const countsql = `
+    select count(id) as total from db_product`
+    const { total } = await db.queryOne(countsql)
+    for (let i = 0; i < products.length; i++) {
+        const imageList = await db.queryMulti(sqlImageList, products[i].id)
+        data.push({
+            id: products[i].id,
+            name: products[i].name,
+            category: products[i].category,
+            producer: products[i].producer,
+            description: products[i].description,
+            instock: products[i].instock,
+            number_buy: products[i].number_buy,
+            price: products[i].price,
+            create_at: products[i].create_at,
+            create_by: products[i].create_by,
+            modified_by: products[i].modified_by,
+            modified_at: products[i].modified_at,
+            status: products[i].status,
+            imageList: imageList
+        })
+    }
+    return {
+        data,
+        metadata: {
+            length: data.length,
+            total
+        }
+    }
+}
 const getProductById = async (id) => {
     const sql = `
     select db_product.id,db_category.\`name\` as category, db_product.\`name\`,db_product.videoUrl, db_product.description, db_product.detail,db_product.feedBack, db_producer.\`name\` as producer,db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
@@ -138,6 +338,438 @@ const getProductByCategoryID = async (categoryId, { limit, offset }) => {
     inner join db_category on db_category.id = db_product.catid
     inner join db_producer on db_producer.id = db_product.producer
     where db_product.trash = 0 and db_category.parent_id=? 
+    limit ?
+    offset ?;
+    `
+    const sqlImageList = `
+    select image
+    from db_product_image
+    where productID = ?
+    `
+    var data = []
+    const { parent_id } = await db.queryOne(sqlCheckCatParent, [categoryId])
+    if (parent_id == 0) {
+        const products = await db.queryMulti(sqlParent, [parent_id, limit, offset])
+        for (let i = 0; i < products.length; i++) {
+            const imageList = await db.queryMulti(sqlImageList, products[i].id)
+            data.push({
+                id: products[i].id,
+                name: products[i].name,
+                category: products[i].category,
+                producer: products[i].producer,
+                description: products[i].description,
+                instock: products[i].instock,
+                number_buy: products[i].number_buy,
+                price: products[i].price,
+                create_at: products[i].create_at,
+                create_by: products[i].create_by,
+                modified_by: products[i].modified_by,
+                modified_at: products[i].modified_at,
+                status: products[i].status,
+                imageList: imageList
+            })
+        }
+        const countsql = `
+        select count(db_product.id) as total 
+        from db_product
+        inner join db_category on db_category.id = db_product.catid
+        where db_product.trash =0 and db_category.parent_id=?
+        `
+        const { total } = await db.queryOne(countsql, [parent_id])
+        return {
+            data,
+            metadata: {
+                length: data.length,
+                total
+            }
+        }
+    } else if (parent_id > 0) {
+        const products = await db.queryMulti(sqlChild, [categoryId, limit, offset])
+        for (let i = 0; i < products.length; i++) {
+            const imageList = await db.queryMulti(sqlImageList, products[i].id)
+            data.push({
+                id: products[i].id,
+                name: products[i].name,
+                category: products[i].category,
+                producer: products[i].producer,
+                description: products[i].description,
+                instock: products[i].instock,
+                number_buy: products[i].number_buy,
+                price: products[i].price,
+                create_at: products[i].create_at,
+                create_by: products[i].create_by,
+                modified_by: products[i].modified_by,
+                modified_at: products[i].modified_at,
+                status: products[i].status,
+                imageList: imageList
+            })
+        }
+        const countsql = `
+        select count(id) as total 
+        from db_product
+        where trash =0 and catid=?
+        `
+        const { total } = await db.queryOne(countsql, [categoryId])
+        return {
+            data,
+            metadata: {
+                length: data.length,
+                total
+            }
+        }
+    }
+}
+const getProductByCategoryIDSortedByTime = async (categoryId, { limit, offset }) => {
+    const sqlCheckCatParent = `
+    select parent_id
+    from db_category
+    where id = ? and trash = 0
+    `
+    const sqlChild = `
+    select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer, db_product.description, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
+    from db_product
+    inner join db_category on db_category.id = db_product.catid
+    inner join db_producer on db_producer.id = db_product.producer
+    where db_product.trash = 0 and db_product.catid=? 
+    order by 
+		db_product.created_at DESC,
+        db_product.\`name\` DESC
+    limit ?
+    offset ?;
+    `
+    const sqlParent = `
+    select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer, db_product.description, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
+    from db_product
+    inner join db_category on db_category.id = db_product.catid
+    inner join db_producer on db_producer.id = db_product.producer
+    where db_product.trash = 0 and db_category.parent_id=? 
+    order by 
+		db_product.created_at DESC,
+        db_product.\`name\` DESC
+    limit ?
+    offset ?;
+    `
+    const sqlImageList = `
+    select image
+    from db_product_image
+    where productID = ?
+    `
+    var data = []
+    const { parent_id } = await db.queryOne(sqlCheckCatParent, [categoryId])
+    if (parent_id == 0) {
+        const products = await db.queryMulti(sqlParent, [parent_id, limit, offset])
+        for (let i = 0; i < products.length; i++) {
+            const imageList = await db.queryMulti(sqlImageList, products[i].id)
+            data.push({
+                id: products[i].id,
+                name: products[i].name,
+                category: products[i].category,
+                producer: products[i].producer,
+                description: products[i].description,
+                instock: products[i].instock,
+                number_buy: products[i].number_buy,
+                price: products[i].price,
+                create_at: products[i].create_at,
+                create_by: products[i].create_by,
+                modified_by: products[i].modified_by,
+                modified_at: products[i].modified_at,
+                status: products[i].status,
+                imageList: imageList
+            })
+        }
+        const countsql = `
+        select count(db_product.id) as total 
+        from db_product
+        inner join db_category on db_category.id = db_product.catid
+        where db_product.trash =0 and db_category.parent_id=?
+        `
+        const { total } = await db.queryOne(countsql, [parent_id])
+        return {
+            data,
+            metadata: {
+                length: data.length,
+                total
+            }
+        }
+    } else if (parent_id > 0) {
+        const products = await db.queryMulti(sqlChild, [categoryId, limit, offset])
+        for (let i = 0; i < products.length; i++) {
+            const imageList = await db.queryMulti(sqlImageList, products[i].id)
+            data.push({
+                id: products[i].id,
+                name: products[i].name,
+                category: products[i].category,
+                producer: products[i].producer,
+                description: products[i].description,
+                instock: products[i].instock,
+                number_buy: products[i].number_buy,
+                price: products[i].price,
+                create_at: products[i].create_at,
+                create_by: products[i].create_by,
+                modified_by: products[i].modified_by,
+                modified_at: products[i].modified_at,
+                status: products[i].status,
+                imageList: imageList
+            })
+        }
+        const countsql = `
+        select count(id) as total 
+        from db_product
+        where trash =0 and catid=?
+        `
+        const { total } = await db.queryOne(countsql, [categoryId])
+        return {
+            data,
+            metadata: {
+                length: data.length,
+                total
+            }
+        }
+    }
+}
+const getProductByCategoryIDSortedByNumberBuy = async (categoryId, { limit, offset }) => {
+    const sqlCheckCatParent = `
+    select parent_id
+    from db_category
+    where id = ? and trash = 0
+    `
+    const sqlChild = `
+    select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer, db_product.description, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
+    from db_product
+    inner join db_category on db_category.id = db_product.catid
+    inner join db_producer on db_producer.id = db_product.producer
+    where db_product.trash = 0 and db_product.catid=? 
+    order by 
+		db_product.number_buy DESC,
+        db_product.\`name\` DESC
+    limit ?
+    offset ?;
+    `
+    const sqlParent = `
+    select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer, db_product.description, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
+    from db_product
+    inner join db_category on db_category.id = db_product.catid
+    inner join db_producer on db_producer.id = db_product.producer
+    where db_product.trash = 0 and db_category.parent_id=? 
+    order by 
+		db_product.number_buy DESC,
+        db_product.\`name\` DESC
+    limit ?
+    offset ?;
+    `
+    const sqlImageList = `
+    select image
+    from db_product_image
+    where productID = ?
+    `
+    var data = []
+    const { parent_id } = await db.queryOne(sqlCheckCatParent, [categoryId])
+    if (parent_id == 0) {
+        const products = await db.queryMulti(sqlParent, [parent_id, limit, offset])
+        for (let i = 0; i < products.length; i++) {
+            const imageList = await db.queryMulti(sqlImageList, products[i].id)
+            data.push({
+                id: products[i].id,
+                name: products[i].name,
+                category: products[i].category,
+                producer: products[i].producer,
+                description: products[i].description,
+                instock: products[i].instock,
+                number_buy: products[i].number_buy,
+                price: products[i].price,
+                create_at: products[i].create_at,
+                create_by: products[i].create_by,
+                modified_by: products[i].modified_by,
+                modified_at: products[i].modified_at,
+                status: products[i].status,
+                imageList: imageList
+            })
+        }
+        const countsql = `
+        select count(db_product.id) as total 
+        from db_product
+        inner join db_category on db_category.id = db_product.catid
+        where db_product.trash =0 and db_category.parent_id=?
+        `
+        const { total } = await db.queryOne(countsql, [parent_id])
+        return {
+            data,
+            metadata: {
+                length: data.length,
+                total
+            }
+        }
+    } else if (parent_id > 0) {
+        const products = await db.queryMulti(sqlChild, [categoryId, limit, offset])
+        for (let i = 0; i < products.length; i++) {
+            const imageList = await db.queryMulti(sqlImageList, products[i].id)
+            data.push({
+                id: products[i].id,
+                name: products[i].name,
+                category: products[i].category,
+                producer: products[i].producer,
+                description: products[i].description,
+                instock: products[i].instock,
+                number_buy: products[i].number_buy,
+                price: products[i].price,
+                create_at: products[i].create_at,
+                create_by: products[i].create_by,
+                modified_by: products[i].modified_by,
+                modified_at: products[i].modified_at,
+                status: products[i].status,
+                imageList: imageList
+            })
+        }
+        const countsql = `
+        select count(id) as total 
+        from db_product
+        where trash =0 and catid=?
+        `
+        const { total } = await db.queryOne(countsql, [categoryId])
+        return {
+            data,
+            metadata: {
+                length: data.length,
+                total
+            }
+        }
+    }
+}
+const getProductByCategoryIDSortedByPriceASC = async (categoryId, { limit, offset }) => {
+    const sqlCheckCatParent = `
+    select parent_id
+    from db_category
+    where id = ? and trash = 0
+    `
+    const sqlChild = `
+    select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer, db_product.description, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
+    from db_product
+    inner join db_category on db_category.id = db_product.catid
+    inner join db_producer on db_producer.id = db_product.producer
+    where db_product.trash = 0 and db_product.catid=? 
+    order by 
+		db_product.price ASC,
+        db_product.\`name\` DESC
+    limit ?
+    offset ?;
+    `
+    const sqlParent = `
+    select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer, db_product.description, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
+    from db_product
+    inner join db_category on db_category.id = db_product.catid
+    inner join db_producer on db_producer.id = db_product.producer
+    where db_product.trash = 0 and db_category.parent_id=? 
+    order by 
+		db_product.price ASC,
+        db_product.\`name\` DESC
+    limit ?
+    offset ?;
+    `
+    const sqlImageList = `
+    select image
+    from db_product_image
+    where productID = ?
+    `
+    var data = []
+    const { parent_id } = await db.queryOne(sqlCheckCatParent, [categoryId])
+    if (parent_id == 0) {
+        const products = await db.queryMulti(sqlParent, [parent_id, limit, offset])
+        for (let i = 0; i < products.length; i++) {
+            const imageList = await db.queryMulti(sqlImageList, products[i].id)
+            data.push({
+                id: products[i].id,
+                name: products[i].name,
+                category: products[i].category,
+                producer: products[i].producer,
+                description: products[i].description,
+                instock: products[i].instock,
+                number_buy: products[i].number_buy,
+                price: products[i].price,
+                create_at: products[i].create_at,
+                create_by: products[i].create_by,
+                modified_by: products[i].modified_by,
+                modified_at: products[i].modified_at,
+                status: products[i].status,
+                imageList: imageList
+            })
+        }
+        const countsql = `
+        select count(db_product.id) as total 
+        from db_product
+        inner join db_category on db_category.id = db_product.catid
+        where db_product.trash =0 and db_category.parent_id=?
+        `
+        const { total } = await db.queryOne(countsql, [parent_id])
+        return {
+            data,
+            metadata: {
+                length: data.length,
+                total
+            }
+        }
+    } else if (parent_id > 0) {
+        const products = await db.queryMulti(sqlChild, [categoryId, limit, offset])
+        for (let i = 0; i < products.length; i++) {
+            const imageList = await db.queryMulti(sqlImageList, products[i].id)
+            data.push({
+                id: products[i].id,
+                name: products[i].name,
+                category: products[i].category,
+                producer: products[i].producer,
+                description: products[i].description,
+                instock: products[i].instock,
+                number_buy: products[i].number_buy,
+                price: products[i].price,
+                create_at: products[i].create_at,
+                create_by: products[i].create_by,
+                modified_by: products[i].modified_by,
+                modified_at: products[i].modified_at,
+                status: products[i].status,
+                imageList: imageList
+            })
+        }
+        const countsql = `
+        select count(id) as total 
+        from db_product
+        where trash =0 and catid=?
+        `
+        const { total } = await db.queryOne(countsql, [categoryId])
+        return {
+            data,
+            metadata: {
+                length: data.length,
+                total
+            }
+        }
+    }
+}
+const getProductByCategoryIDSortedByPriceDESC = async (categoryId, { limit, offset }) => {
+    const sqlCheckCatParent = `
+    select parent_id
+    from db_category
+    where id = ? and trash = 0
+    `
+    const sqlChild = `
+    select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer, db_product.description, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
+    from db_product
+    inner join db_category on db_category.id = db_product.catid
+    inner join db_producer on db_producer.id = db_product.producer
+    where db_product.trash = 0 and db_product.catid=? 
+    order by 
+		db_product.price DESC,
+        db_product.\`name\` DESC
+    limit ?
+    offset ?;
+    `
+    const sqlParent = `
+    select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer, db_product.description, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
+    from db_product
+    inner join db_category on db_category.id = db_product.catid
+    inner join db_producer on db_producer.id = db_product.producer
+    where db_product.trash = 0 and db_category.parent_id=? 
+    order by 
+		db_product.price DESC,
+        db_product.\`name\` DESC
     limit ?
     offset ?;
     `
@@ -349,12 +981,20 @@ const parameterProduct = async () => {
 }
 module.exports = {
     getAllProduct,
+    getAllProductSortedByNumberBuy,
+    getAllProductSortedByPriceASC,
+    getAllProductSortedByPriceDESC,
+    getAllProductSortedByTime,
     getProductById,
+    getProductByCategoryID,
+    getProductByCategoryIDSortedByNumberBuy,
+    getProductByCategoryIDSortedByPriceASC,
+    getProductByCategoryIDSortedByPriceDESC,
+    getProductByCategoryIDSortedByTime,
     createProduct,
     createProductImage,
     updateProductByID,
     deleteProductByID,
-    getProductByCategoryID,
     parameterProduct,
     getProductByName,
     getProductByProducerID,
