@@ -40,6 +40,28 @@ const getAllCategoryNoTree = async () => {
         data
     }
 }
+const getAllParentCategory = async () => {
+    const sql = `
+    select id, parent_id, \`name\`,created_at, created_by, modified_at, modified_by
+    from db_category
+    where trash = 0  and parent_id = 0
+    `
+    const data = await db.queryMulti(sql)
+    return {
+        data
+    }
+}
+const getAllChildCategory = async () => {
+    const sql = `
+    select id, parent_id, \`name\`,created_at, created_by, modified_at, modified_by
+    from db_category
+    where trash = 0 and parent_id > 0
+    `
+    const data = await db.queryMulti(sql)
+    return {
+        data
+    }
+}
 const getCategoryByID = async (id) => {
     const sql = `
     select id, parent_id, \`name\`,created_at, created_by, modified_at, modified_by
@@ -94,6 +116,8 @@ const parameterCategory = async () => {
 module.exports = {
     getAllCategory,
     getAllCategoryNoTree,
+    getAllChildCategory,
+    getAllParentCategory,
     getCategoryByID,
     createCategory,
     updateCategoryByID,

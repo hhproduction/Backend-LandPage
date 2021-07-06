@@ -7,6 +7,10 @@ Route.get('/',
     Trycatch(categoryController.getAllCategory))
 Route.get('/no_tree',
     Trycatch(categoryController.getAllCategoryNoTree))
+Route.get('/parent',
+    Trycatch(categoryController.getAllParentCategory))
+Route.get('/child',
+    Trycatch(categoryController.getAllChildCategory))
 Route.get('/:id',
     Trycatch(categoryController.getCategoryByID))
 Route.post('/',
