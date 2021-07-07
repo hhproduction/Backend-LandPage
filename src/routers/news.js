@@ -16,12 +16,12 @@ Route.post('/',
   store.array('imagesnews', 15),
   Trycatch(newsController.createNews));
 
-// Route.post('/upload_multiple/:id',
-//   requireLogin,
-//   requireRole('ADMIN'),
-  
-//   Trycatch(newsController.uploadMultipleNewsImage)
-// );
+Route.post('/upload_multiple',
+  // requireLogin,
+  // requireRole('ADMIN'),
+  store.array('imageTest',2)
+  // Trycatch(newsController.uploadMultipleNewsImage)
+);
 Route.post('/newsImage/delete',
   requireLogin,
   requireRole('ADMIN'),

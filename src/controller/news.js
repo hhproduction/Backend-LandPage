@@ -1,5 +1,5 @@
 const newsService = require('../services/news')
-const {s3} = require('../middlewares/multer')
+const { s3 } = require('../middlewares/multer')
 const getAllNews = async (req, res) => {
     const { data, metadata } = await newsService.getAllNews(req.pagination)
     res.send({
@@ -23,7 +23,7 @@ const createNews = async (req, res) => {
         const error = new Error('Please choose files');
         return next(error)
     }
-    const {id} = await newsService.createNews(req.body)
+    const { id } = await newsService.createNews(req.body)
     await newsService.createNewsImage(files, id)
     res.send({
         status: 1,
@@ -31,17 +31,17 @@ const createNews = async (req, res) => {
         data: files
     })
 }
-// const uploadMultipleNewsImage = async (req, res, next) => {
-    
-//     const { id } = req.params;
-    
-    
-//     res.send({
-//         status: 1,
-//         message: "upload image successfull",
-//         data: files
-//     })
-// }
+const uploadMultipleNewsImage = async (req, res, next) => {
+
+    // const { id } = req.params;
+    const files = req.files
+
+    res.send({
+        status: 1,
+        message: "upload image successfull",
+        data: files
+    })
+}
 
 const updateNews = async (req, res) => {
     const { id } = req.params;
@@ -87,7 +87,7 @@ module.exports = {
     getAllNews,
     getNewsById,
     createNews,
-    // uploadMultipleNewsImage,
+    uploadMultipleNewsImage,
     updateNews,
     deleteNews,
     deleteNewsImage
