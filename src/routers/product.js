@@ -13,6 +13,8 @@ Route.get('/price_sort_desc',
   Trycatch(productController.getAllProductSortedByPriceDESC));
 Route.get('/time_sort',
   Trycatch(productController.getAllProductSortedByTime));
+Route.get('/related_product/:productID',
+  Trycatch(productController.getRelatedProduct));
 
 Route.get('/category/:categoryId',
   Trycatch(productController.getProductByCategoryID));

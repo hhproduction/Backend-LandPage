@@ -247,6 +247,62 @@ const getAllProductSortedByPriceDESC = async ({ limit, offset }) => {
         }
     }
 }
+const getRelatedProduct = async ({ limit, offset }, productID) => {
+    const sqlCat = `
+    select catid
+    from db_product
+    where trash = 0 and id = ?
+    `
+    const sql = `
+    select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer,db_product.description, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
+    from db_product
+    inner join db_category on db_category.id = db_product.catid
+    inner join db_producer on db_producer.id = db_product.producer
+    where db_product.trash = 0 and db_product.catid = ?
+    limit ?
+    offset ?;
+    `
+    const sqlImageList = `
+    select image
+    from db_product_image
+    where productID = ?
+    `
+    var data = []
+    const {catid}= await db.queryOne(sqlCat,productID)
+    const products = await db.queryMulti(sql, [catid, limit, offset])
+    const countsql = `
+    select count(id) as total 
+    from db_product
+    where catid = ?
+    `
+    const { total } = await db.queryOne(countsql,[catid])
+    for (let i = 0; i < products.length; i++) {
+        const imageList = await db.queryMulti(sqlImageList, products[i].id)
+        data.push({
+            id: products[i].id,
+            name: products[i].name,
+            category: products[i].category,
+            producer: products[i].producer,
+            description: products[i].description,
+            instock: products[i].instock,
+            number_buy: products[i].number_buy,
+            price: products[i].price,
+            create_at: products[i].create_at,
+            create_by: products[i].create_by,
+            modified_by: products[i].modified_by,
+            modified_at: products[i].modified_at,
+            status: products[i].status,
+            imageList: imageList
+        })
+    }
+    return {
+        data,
+        metadata: {
+            length: data.length,
+            total
+        }
+    }
+}
 const getProductById = async (id) => {
     const sql = `
     select db_product.id,db_category.\`name\` as category, db_product.\`name\`,db_product.videoUrl, db_product.description, db_product.detail,db_product.feedBack, db_producer.\`name\` as producer,db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
@@ -264,7 +320,7 @@ const getProductById = async (id) => {
     const result = await db.queryOne(sql, [id])
     const imageList = await db.queryMulti(sqlImageProduct, [id])
     return {
-        data:{
+        data: {
             ...result,
             imageList
         }
@@ -987,6 +1043,7 @@ module.exports = {
     getAllProductSortedByPriceASC,
     getAllProductSortedByPriceDESC,
     getAllProductSortedByTime,
+    getRelatedProduct,
     getProductById,
     getProductByCategoryID,
     getProductByCategoryIDSortedByNumberBuy,

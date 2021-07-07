@@ -40,6 +40,15 @@ const getAllProductSortedByTime = async (req, res) => {
         data
     })
 }
+const getRelatedProduct = async (req, res) => {
+    const productID = req.params;
+    const { data, metadata } = await productService.getRelatedProduct(req.pagination, productID)
+    res.send({
+        status: 1,
+        metadata,
+        data
+    })
+}
 const getProductById = async (req, res) => {
     const { id } = req.params;
     const { data } = await productService.getProductById(id)
@@ -177,6 +186,7 @@ module.exports = {
     getAllProductSortedByPriceASC,
     getAllProductSortedByPriceDESC,
     getAllProductSortedByTime,
+    getRelatedProduct,
     getProductById,
     createProduct,
     // uploadMultipleProductImage,
