@@ -41,7 +41,7 @@ const getAllProductSortedByTime = async (req, res) => {
     })
 }
 const getRelatedProduct = async (req, res) => {
-    const productID = req.params;
+    const {productID} = req.params;
     const { data, metadata } = await productService.getRelatedProduct(req.pagination, productID)
     res.send({
         status: 1,
@@ -73,7 +73,7 @@ const createProduct = async (req, res) => {
         const error = new Error('Please choose files');
         return next(error)
     }
-    console.log(files);
+    // console.log(files);
     const {id} = await productService.createProduct(req.body)
     await productService.createProductImage(files, id)
     res.send({
