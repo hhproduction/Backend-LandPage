@@ -37,9 +37,8 @@ const uploadMultipleNewsImage = async (req, res, next) => {
     const files = req.files
 
     res.send({
-        status: 1,
-        message: "upload image successfull",
-        data: files
+        uploaded:true,
+        url: files[0].location
     })
 }
 
