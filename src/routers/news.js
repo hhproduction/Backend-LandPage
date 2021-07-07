@@ -19,8 +19,8 @@ Route.post('/',
 Route.post('/upload_multiple',
   // requireLogin,
   // requireRole('ADMIN'),
-  store.array('upload',2)
-  // Trycatch(newsController.uploadMultipleNewsImage)
+  store.array('upload',2),
+  Trycatch(newsController.uploadMultipleNewsImage)
 );
 Route.post('/newsImage/delete',
   requireLogin,
