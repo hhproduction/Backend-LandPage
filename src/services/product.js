@@ -985,6 +985,17 @@ const createProductImage = async (files, id) => {
     `
     await db.query(sql, [values])
 }
+const createProductAvatar = async (files, id) => {
+    var values = new Array();
+    for (let i = 0; i < files.length; i++) {
+        values.push([uuidv4.v4(), files[i].location, files[i].mimetype, files[i].size, id])
+    }
+    const sql = `
+    insert into db_product_avatar (\`id\`, \`avatar\`,\`type\`,\`size\`,\`productID\`) values 
+    ?
+    `
+    await db.query(sql, [values])
+}
 const updateProductByID = async ({ name, videoUrl, detail, feedBack, producer, instock, price, catid, productID }) => {
     const sqlCountBuy = `
     select sum(quantity) as number_buy
@@ -1052,6 +1063,7 @@ module.exports = {
     getProductByCategoryIDSortedByTime,
     createProduct,
     createProductImage,
+    createProductAvatar,
     updateProductByID,
     deleteProductByID,
     parameterProduct,

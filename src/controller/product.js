@@ -68,14 +68,16 @@ const getProductByName = async (req, res) => {
     })
 }
 const createProduct = async (req, res) => {
-    const files = req.files;
-    if (!files) {
+    const ava = req.files['avatarsProduct'];
+    const image = req.files['imagesProduct']
+    if (!ava || !image) {
         const error = new Error('Please choose files');
         return next(error)
     }
     // console.log(files);
     const {id} = await productService.createProduct(req.body)
-    await productService.createProductImage(files, id)
+    await productService.createProductAvatar(ava, id)
+    await productService.createProductImage(image, id)
     res.send({
         status: 1,
         message: "Product was created successfull",
