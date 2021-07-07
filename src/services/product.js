@@ -265,7 +265,7 @@ const getProductById = async (id) => {
     const imageList = await db.queryMulti(sqlImageProduct, [id])
     return {
         data:{
-            result,
+            ...result,
             imageList
         }
     }
