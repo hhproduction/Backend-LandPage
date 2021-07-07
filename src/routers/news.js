@@ -17,8 +17,8 @@ Route.post('/',
   Trycatch(newsController.createNews));
 
 Route.post('/upload_multiple',
-  // requireLogin,
-  // requireRole('ADMIN'),
+  requireLogin,
+  requireRole('ADMIN'),
   store.array('imageTest',2)
   // Trycatch(newsController.uploadMultipleNewsImage)
 );
