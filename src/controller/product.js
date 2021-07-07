@@ -42,11 +42,10 @@ const getAllProductSortedByTime = async (req, res) => {
 }
 const getProductById = async (req, res) => {
     const { id } = req.params;
-    const { data, listImage } = await productService.getProductById(id)
+    const { data } = await productService.getProductById(id)
     res.send({
         status: 1,
-        data,
-        listImage
+        data
     })
 }
 const getProductByName = async (req, res) => {

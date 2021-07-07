@@ -261,11 +261,13 @@ const getProductById = async (id) => {
     inner join db_product on db_product.id = db_product_image.productID
     where db_product_image.productID = ?;
     `
-    const data = await db.queryOne(sql, [id])
-    const listImage = await db.queryMulti(sqlImageProduct, [id])
+    const result = await db.queryOne(sql, [id])
+    const imageList = await db.queryMulti(sqlImageProduct, [id])
     return {
-        data,
-        listImage
+        data:{
+            result,
+            imageList
+        }
     }
 }
 const getProductByName = async (name, { limit, offset }) => {
