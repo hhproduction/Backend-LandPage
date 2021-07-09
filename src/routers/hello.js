@@ -9,3 +9,4 @@ Route.get('/',(req,res)=>{
     )
 
 })
+module.exports = Route
