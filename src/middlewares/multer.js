@@ -6,8 +6,7 @@ const path = require('path')
 const s3 = new AWS.S3({
     accessKeyId: process.env.AWS_ID,
     secretAccessKey: process.env.AWS_SECRET,
-    bucket: process.env.AWS_BUCKET_NAME,
-    apiVersion:env.AWS_API_VERSION
+    bucket: process.env.AWS_BUCKET_NAME
 })
 
 
