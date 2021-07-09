@@ -41,7 +41,7 @@ const getAllProductSortedByTime = async (req, res) => {
     })
 }
 const getRelatedProduct = async (req, res) => {
-    const {productID} = req.params;
+    const { productID } = req.params;
     const { data, metadata } = await productService.getRelatedProduct(req.pagination, productID)
     res.send({
         status: 1,
@@ -68,16 +68,14 @@ const getProductByName = async (req, res) => {
     })
 }
 const createProduct = async (req, res) => {
-    const ava = req.files['avatarsProduct'];
-    const image = req.files['imagesProduct']
-    if (!ava || !image) {
+    const files = req.files
+    if (!files) {
         const error = new Error('Please choose files');
-        return next(error)
+        return { error }
     }
     // console.log(files);
-    const {id} = await productService.createProduct(req.body)
-    await productService.createProductAvatar(ava, id)
-    await productService.createProductImage(image, id)
+    const { id } = await productService.createProduct(req.body)
+    await productService.createProductImage(files, id)
     res.send({
         status: 1,
         message: "Product was created successfull",
@@ -85,7 +83,7 @@ const createProduct = async (req, res) => {
     })
 }
 // const uploadMultipleProductImage = async (req, res, next) => {
-    
+
 // }
 
 const updateProduct = async (req, res) => {

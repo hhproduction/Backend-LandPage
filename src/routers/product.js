@@ -36,10 +36,7 @@ Route.get('/search/:name',
 Route.post('/',
   requireLogin,
   requireRole("ADMIN"),
-  store.fields([
-    {name:'avatarsProduct', maxCount:2},
-    {name:'imagesProduct', maxCount:6}
-  ]),
+  store.array('imagesProduct',15),
   Trycatch(productController.createProduct));
 
 // Route.post('/upload_multiple/:id',

@@ -2,7 +2,7 @@ const db = require('../utils/db')
 const uuidv4 = require('uuid')
 const getAllProduct = async ({ limit, offset }) => {
     const sql = `
-    select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer,db_product.description, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
+    select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer,db_product.detail, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
     from db_product
     inner join db_category on db_category.id = db_product.catid
     inner join db_producer on db_producer.id = db_product.producer
@@ -15,19 +15,31 @@ const getAllProduct = async ({ limit, offset }) => {
     from db_product_image
     where productID = ?
     `
+    const sqlVartiant = `
+    select id, color, imageID as image_id, productID
+    from db_product_variant
+    where productID = ?
+    `
+    const sqlComment = `
+    select id, productID, username, comment, modified_at
+    from db_product_comment
+    where productID = ?
+    `
     var data = []
     const products = await db.queryMulti(sql, [limit, offset])
     const countsql = `
     select count(id) as total from db_product`
     const { total } = await db.queryOne(countsql)
     for (let i = 0; i < products.length; i++) {
-        const imageList = await db.queryMulti(sqlImageList, products[i].id)
+        const imageList = await db.queryMulti(sqlImageList, [products[i].id])
+        const variants = await db.queryMulti(sqlVartiant, [products[i].id])
+        const comments = await db.queryMulti(sqlComment, [products[i].id])
         data.push({
             id: products[i].id,
             name: products[i].name,
             category: products[i].category,
             producer: products[i].producer,
-            description: products[i].description,
+            description: products[i].detail,
             instock: products[i].instock,
             number_buy: products[i].number_buy,
             price: products[i].price,
@@ -36,7 +48,9 @@ const getAllProduct = async ({ limit, offset }) => {
             modified_by: products[i].modified_by,
             modified_at: products[i].modified_at,
             status: products[i].status,
-            imageList: imageList
+            variants: variants,
+            imageList: imageList,
+            comments: comments
         })
     }
     return {
@@ -49,7 +63,7 @@ const getAllProduct = async ({ limit, offset }) => {
 }
 const getAllProductSortedByNumberBuy = async ({ limit, offset }) => {
     const sql = `
-    select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer,db_product.description, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
+    select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer,db_product.detail, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
     from db_product
     inner join db_category on db_category.id = db_product.catid
     inner join db_producer on db_producer.id = db_product.producer
@@ -65,19 +79,31 @@ const getAllProductSortedByNumberBuy = async ({ limit, offset }) => {
     from db_product_image
     where productID = ?
     `
+    const sqlVartiant = `
+    select id, color, imageID as image_id, productID
+    from db_product_variant
+    where productID = ?
+    `
+    const sqlComment = `
+    select id, productID, username, comment, modified_at
+    from db_product_comment
+    where productID = ?
+    `
     var data = []
     const products = await db.queryMulti(sql, [limit, offset])
     const countsql = `
     select count(id) as total from db_product`
     const { total } = await db.queryOne(countsql)
     for (let i = 0; i < products.length; i++) {
-        const imageList = await db.queryMulti(sqlImageList, products[i].id)
+        const imageList = await db.queryMulti(sqlImageList, [products[i].id])
+        const variants = await db.queryMulti(sqlVartiant, [products[i].id])
+        const comments = await db.queryMulti(sqlComment, [products[i].id])
         data.push({
             id: products[i].id,
             name: products[i].name,
             category: products[i].category,
             producer: products[i].producer,
-            description: products[i].description,
+            description: products[i].detail,
             instock: products[i].instock,
             number_buy: products[i].number_buy,
             price: products[i].price,
@@ -86,7 +112,9 @@ const getAllProductSortedByNumberBuy = async ({ limit, offset }) => {
             modified_by: products[i].modified_by,
             modified_at: products[i].modified_at,
             status: products[i].status,
-            imageList: imageList
+            variants: variants,
+            imageList: imageList,
+            comments: comments
         })
     }
     return {
@@ -99,7 +127,7 @@ const getAllProductSortedByNumberBuy = async ({ limit, offset }) => {
 }
 const getAllProductSortedByTime = async ({ limit, offset }) => {
     const sql = `
-    select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer,db_product.description, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
+    select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer,db_product.detail, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
     from db_product
     inner join db_category on db_category.id = db_product.catid
     inner join db_producer on db_producer.id = db_product.producer
@@ -115,19 +143,31 @@ const getAllProductSortedByTime = async ({ limit, offset }) => {
     from db_product_image
     where productID = ?
     `
+    const sqlVartiant = `
+    select id, color, imageID as image_id, productID
+    from db_product_variant
+    where productID = ?
+    `
+    const sqlComment = `
+    select id, productID, username, comment, modified_at
+    from db_product_comment
+    where productID = ?
+    `
     var data = []
     const products = await db.queryMulti(sql, [limit, offset])
     const countsql = `
     select count(id) as total from db_product`
     const { total } = await db.queryOne(countsql)
     for (let i = 0; i < products.length; i++) {
-        const imageList = await db.queryMulti(sqlImageList, products[i].id)
+        const imageList = await db.queryMulti(sqlImageList, [products[i].id])
+        const variants = await db.queryMulti(sqlVartiant, [products[i].id])
+        const comments = await db.queryMulti(sqlComment, [products[i].id])
         data.push({
             id: products[i].id,
             name: products[i].name,
             category: products[i].category,
             producer: products[i].producer,
-            description: products[i].description,
+            description: products[i].detail,
             instock: products[i].instock,
             number_buy: products[i].number_buy,
             price: products[i].price,
@@ -136,7 +176,9 @@ const getAllProductSortedByTime = async ({ limit, offset }) => {
             modified_by: products[i].modified_by,
             modified_at: products[i].modified_at,
             status: products[i].status,
-            imageList: imageList
+            variants: variants,
+            imageList: imageList,
+            comments: comments
         })
     }
     return {
@@ -149,7 +191,7 @@ const getAllProductSortedByTime = async ({ limit, offset }) => {
 }
 const getAllProductSortedByPriceASC = async ({ limit, offset }) => {
     const sql = `
-    select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer,db_product.description, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
+    select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer,db_product.detail, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
     from db_product
     inner join db_category on db_category.id = db_product.catid
     inner join db_producer on db_producer.id = db_product.producer
@@ -165,19 +207,31 @@ const getAllProductSortedByPriceASC = async ({ limit, offset }) => {
     from db_product_image
     where productID = ?
     `
+    const sqlVartiant = `
+    select id, color, imageID as image_id, productID
+    from db_product_variant
+    where productID = ?
+    `
+    const sqlComment = `
+    select id, productID, username, comment, modified_at
+    from db_product_comment
+    where productID = ?
+    `
     var data = []
     const products = await db.queryMulti(sql, [limit, offset])
     const countsql = `
     select count(id) as total from db_product`
     const { total } = await db.queryOne(countsql)
     for (let i = 0; i < products.length; i++) {
-        const imageList = await db.queryMulti(sqlImageList, products[i].id)
+        const imageList = await db.queryMulti(sqlImageList, [products[i].id])
+        const variants = await db.queryMulti(sqlVartiant, [products[i].id])
+        const comments = await db.queryMulti(sqlComment, [products[i].id])
         data.push({
             id: products[i].id,
             name: products[i].name,
             category: products[i].category,
             producer: products[i].producer,
-            description: products[i].description,
+            description: products[i].detail,
             instock: products[i].instock,
             number_buy: products[i].number_buy,
             price: products[i].price,
@@ -186,7 +240,9 @@ const getAllProductSortedByPriceASC = async ({ limit, offset }) => {
             modified_by: products[i].modified_by,
             modified_at: products[i].modified_at,
             status: products[i].status,
-            imageList: imageList
+            variants: variants,
+            imageList: imageList,
+            comments: comments
         })
     }
     return {
@@ -199,7 +255,7 @@ const getAllProductSortedByPriceASC = async ({ limit, offset }) => {
 }
 const getAllProductSortedByPriceDESC = async ({ limit, offset }) => {
     const sql = `
-    select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer,db_product.description, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
+    select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer,db_product.detail, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
     from db_product
     inner join db_category on db_category.id = db_product.catid
     inner join db_producer on db_producer.id = db_product.producer
@@ -215,19 +271,31 @@ const getAllProductSortedByPriceDESC = async ({ limit, offset }) => {
     from db_product_image
     where productID = ?
     `
+    const sqlVartiant = `
+    select id, color, imageID as image_id, productID
+    from db_product_variant
+    where productID = ?
+    `
+    const sqlComment = `
+    select id, productID, username, comment, modified_at
+    from db_product_comment
+    where productID = ?
+    `
     var data = []
     const products = await db.queryMulti(sql, [limit, offset])
     const countsql = `
     select count(id) as total from db_product`
     const { total } = await db.queryOne(countsql)
     for (let i = 0; i < products.length; i++) {
-        const imageList = await db.queryMulti(sqlImageList, products[i].id)
+        const imageList = await db.queryMulti(sqlImageList, [products[i].id])
+        const variants = await db.queryMulti(sqlVartiant, [products[i].id])
+        const comments = await db.queryMulti(sqlComment, [products[i].id])
         data.push({
             id: products[i].id,
             name: products[i].name,
             category: products[i].category,
             producer: products[i].producer,
-            description: products[i].description,
+            description: products[i].detail,
             instock: products[i].instock,
             number_buy: products[i].number_buy,
             price: products[i].price,
@@ -236,7 +304,9 @@ const getAllProductSortedByPriceDESC = async ({ limit, offset }) => {
             modified_by: products[i].modified_by,
             modified_at: products[i].modified_at,
             status: products[i].status,
-            imageList: imageList
+            variants: variants,
+            imageList: imageList,
+            comments: comments
         })
     }
     return {
@@ -254,7 +324,7 @@ const getRelatedProduct = async ({ limit, offset }, productID) => {
     where trash = 0 and id = ?
     `
     const sql = `
-    select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer,db_product.description, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
+    select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer,db_product.detail, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
     from db_product
     inner join db_category on db_category.id = db_product.catid
     inner join db_producer on db_producer.id = db_product.producer
@@ -267,23 +337,35 @@ const getRelatedProduct = async ({ limit, offset }, productID) => {
     from db_product_image
     where productID = ?
     `
+    const sqlVartiant = `
+    select id, color, imageID as image_id, productID
+    from db_product_variant
+    where productID = ?
+    `
+    const sqlComment = `
+    select id, productID, username, comment, modified_at
+    from db_product_comment
+    where productID = ?
+    `
     var data = []
-    const {catid}= await db.queryOne(sqlCat,productID)
+    const { catid } = await db.queryOne(sqlCat, productID)
     const products = await db.queryMulti(sql, [catid, limit, offset])
     const countsql = `
     select count(id) as total 
     from db_product
     where catid = ?
     `
-    const { total } = await db.queryOne(countsql,[catid])
+    const { total } = await db.queryOne(countsql, [catid])
     for (let i = 0; i < products.length; i++) {
-        const imageList = await db.queryMulti(sqlImageList, products[i].id)
+        const imageList = await db.queryMulti(sqlImageList, [products[i].id])
+        const variants = await db.queryMulti(sqlVartiant, [products[i].id])
+        const comments = await db.queryMulti(sqlComment, [products[i].id])
         data.push({
             id: products[i].id,
             name: products[i].name,
             category: products[i].category,
             producer: products[i].producer,
-            description: products[i].description,
+            description: products[i].detail,
             instock: products[i].instock,
             number_buy: products[i].number_buy,
             price: products[i].price,
@@ -292,7 +374,9 @@ const getRelatedProduct = async ({ limit, offset }, productID) => {
             modified_by: products[i].modified_by,
             modified_at: products[i].modified_at,
             status: products[i].status,
-            imageList: imageList
+            variants: variants,
+            imageList: imageList,
+            comments: comments
         })
     }
     return {
@@ -305,7 +389,7 @@ const getRelatedProduct = async ({ limit, offset }, productID) => {
 }
 const getProductById = async (id) => {
     const sql = `
-    select db_product.id,db_category.\`name\` as category, db_product.\`name\`,db_product.videoUrl, db_product.description, db_product.detail,db_product.feedBack, db_producer.\`name\` as producer,db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
+    select db_product.id,db_category.\`name\` as category, db_product.\`name\`,db_product.videoUrl, db_product.detail, db_producer.\`name\` as producer,db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
     from db_product
     inner join db_category on db_category.id = db_product.catid
     inner join db_producer on db_producer.id = db_product.producer
@@ -317,18 +401,32 @@ const getProductById = async (id) => {
     inner join db_product on db_product.id = db_product_image.productID
     where db_product_image.productID = ?;
     `
+    const sqlVartiant = `
+    select id, color, imageID as image_id, productID
+    from db_product_variant
+    where productID = ?
+    `
+    const sqlComment = `
+    select id, productID, username, comment, modified_at
+    from db_product_comment
+    where productID = ?
+    `
     const result = await db.queryOne(sql, [id])
     const imageList = await db.queryMulti(sqlImageProduct, [id])
+    const variants = await db.queryMulti(sqlVartiant, [id])
+    const comments = await db.queryMulti(sqlComment, [id])
     return {
         data: {
             ...result,
-            imageList
+            variants: variants,
+            imageList: imageList,
+            comments: comments
         }
     }
 }
 const getProductByName = async (name, { limit, offset }) => {
     const sql = `
-    select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer,db_product.description, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
+    select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer,db_product.detail, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
     from db_product
     inner join db_category on db_category.id = db_product.catid
     inner join db_producer on db_producer.id = db_product.producer
@@ -341,6 +439,16 @@ const getProductByName = async (name, { limit, offset }) => {
     from db_product_image
     where productID = ?
     `
+    const sqlVartiant = `
+    select id, color, imageID as image_id, productID
+    from db_product_variant
+    where productID = ?
+    `
+    const sqlComment = `
+    select id, productID, username, comment, modified_at
+    from db_product_comment
+    where productID = ?
+    `
     var data = []
     const products = await db.queryMulti(sql, [name, limit, offset])
     const countsql = `
@@ -349,13 +457,15 @@ const getProductByName = async (name, { limit, offset }) => {
     `
     const { total } = await db.queryOne(countsql, [name])
     for (let i = 0; i < products.length; i++) {
-        const imageList = await db.queryMulti(sqlImageList, products[i].id)
+        const imageList = await db.queryMulti(sqlImageList, [products[i].id])
+        const variants = await db.queryMulti(sqlVartiant, [products[i].id])
+        const comments = await db.queryMulti(sqlComment, [products[i].id])
         data.push({
             id: products[i].id,
             name: products[i].name,
             category: products[i].category,
             producer: products[i].producer,
-            description: products[i].description,
+            description: products[i].detail,
             instock: products[i].instock,
             number_buy: products[i].number_buy,
             price: products[i].price,
@@ -364,7 +474,9 @@ const getProductByName = async (name, { limit, offset }) => {
             modified_by: products[i].modified_by,
             modified_at: products[i].modified_at,
             status: products[i].status,
-            imageList: imageList
+            variants: variants,
+            imageList: imageList,
+            comments: comments
         })
     }
     return {
@@ -382,7 +494,7 @@ const getProductByCategoryID = async (categoryId, { limit, offset }) => {
     where id = ? and trash = 0
     `
     const sqlChild = `
-    select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer, db_product.description, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
+    select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer,db_product.detail, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
     from db_product
     inner join db_category on db_category.id = db_product.catid
     inner join db_producer on db_producer.id = db_product.producer
@@ -391,7 +503,7 @@ const getProductByCategoryID = async (categoryId, { limit, offset }) => {
     offset ?;
     `
     const sqlParent = `
-    select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer, db_product.description, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
+    select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer,db_product.detail, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
     from db_product
     inner join db_category on db_category.id = db_product.catid
     inner join db_producer on db_producer.id = db_product.producer
@@ -404,18 +516,54 @@ const getProductByCategoryID = async (categoryId, { limit, offset }) => {
     from db_product_image
     where productID = ?
     `
+    const sqlVartiant = `
+    select id, color, imageID as image_id, productID
+    from db_product_variant
+    where productID = ?
+    `
+    const sqlComment = `
+    select id, productID, username, comment, modified_at
+    from db_product_comment
+    where productID = ?
+    `
     var data = []
     const { parent_id } = await db.queryOne(sqlCheckCatParent, [categoryId])
     if (parent_id == 0) {
-        const products = await db.queryMulti(sqlParent, [parent_id, limit, offset])
+        const productsParent = await db.queryMulti(sqlParent, [parent_id, limit, offset])
         for (let i = 0; i < products.length; i++) {
-            const imageList = await db.queryMulti(sqlImageList, products[i].id)
+            const imageList = await db.queryMulti(sqlImageList, [productsParent[i].id])
+            const variants = await db.queryMulti(sqlVartiant, [productsParent[i].id])
+            const comments = await db.queryMulti(sqlComment, [productsParent[i].id])
+            data.push({
+                id: productsParent[i].id,
+                name: productsParent[i].name,
+                category: productsParent[i].category,
+                producer: productsParent[i].producer,
+                description: productsParent[i].detail,
+                instock: productsParent[i].instock,
+                number_buy: productsParent[i].number_buy,
+                price: productsParent[i].price,
+                create_at: productsParent[i].create_at,
+                create_by: productsParent[i].create_by,
+                modified_by: productsParent[i].modified_by,
+                modified_at: productsParent[i].modified_at,
+                status: productsParent[i].status,
+                variants: variants,
+                imageList: imageList,
+                comments: comments
+            })
+        }
+        const products = await db.queryMulti(sqlChild, [categoryId, limit, offset])
+        for (let i = 0; i < products.length; i++) {
+            const imageList = await db.queryMulti(sqlImageList, [products[i].id])
+            const variants = await db.queryMulti(sqlVartiant, [products[i].id])
+            const comments = await db.queryMulti(sqlComment, [products[i].id])
             data.push({
                 id: products[i].id,
                 name: products[i].name,
                 category: products[i].category,
                 producer: products[i].producer,
-                description: products[i].description,
+                description: products[i].detail,
                 instock: products[i].instock,
                 number_buy: products[i].number_buy,
                 price: products[i].price,
@@ -424,7 +572,9 @@ const getProductByCategoryID = async (categoryId, { limit, offset }) => {
                 modified_by: products[i].modified_by,
                 modified_at: products[i].modified_at,
                 status: products[i].status,
-                imageList: imageList
+                variants: variants,
+                imageList: imageList,
+                comments: comments
             })
         }
         const countsql = `
@@ -444,13 +594,15 @@ const getProductByCategoryID = async (categoryId, { limit, offset }) => {
     } else if (parent_id > 0) {
         const products = await db.queryMulti(sqlChild, [categoryId, limit, offset])
         for (let i = 0; i < products.length; i++) {
-            const imageList = await db.queryMulti(sqlImageList, products[i].id)
+            const imageList = await db.queryMulti(sqlImageList, [products[i].id])
+            const variants = await db.queryMulti(sqlVartiant, [products[i].id])
+            const comments = await db.queryMulti(sqlComment, [products[i].id])
             data.push({
                 id: products[i].id,
                 name: products[i].name,
                 category: products[i].category,
                 producer: products[i].producer,
-                description: products[i].description,
+                description: products[i].detail,
                 instock: products[i].instock,
                 number_buy: products[i].number_buy,
                 price: products[i].price,
@@ -459,7 +611,9 @@ const getProductByCategoryID = async (categoryId, { limit, offset }) => {
                 modified_by: products[i].modified_by,
                 modified_at: products[i].modified_at,
                 status: products[i].status,
-                imageList: imageList
+                variants: variants,
+                imageList: imageList,
+                comments: comments
             })
         }
         const countsql = `
@@ -484,7 +638,7 @@ const getProductByCategoryIDSortedByTime = async (categoryId, { limit, offset })
     where id = ? and trash = 0
     `
     const sqlChild = `
-    select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer, db_product.description, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
+    select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer,db_product.detail, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
     from db_product
     inner join db_category on db_category.id = db_product.catid
     inner join db_producer on db_producer.id = db_product.producer
@@ -496,7 +650,7 @@ const getProductByCategoryIDSortedByTime = async (categoryId, { limit, offset })
     offset ?;
     `
     const sqlParent = `
-    select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer, db_product.description, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
+    select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer,db_product.detail, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
     from db_product
     inner join db_category on db_category.id = db_product.catid
     inner join db_producer on db_producer.id = db_product.producer
@@ -512,18 +666,54 @@ const getProductByCategoryIDSortedByTime = async (categoryId, { limit, offset })
     from db_product_image
     where productID = ?
     `
+    const sqlVartiant = `
+    select id, color, imageID as image_id, productID
+    from db_product_variant
+    where productID = ?
+    `
+    const sqlComment = `
+    select id, productID, username, comment, modified_at
+    from db_product_comment
+    where productID = ?
+    `
     var data = []
     const { parent_id } = await db.queryOne(sqlCheckCatParent, [categoryId])
     if (parent_id == 0) {
-        const products = await db.queryMulti(sqlParent, [parent_id, limit, offset])
+        const productsParent = await db.queryMulti(sqlParent, [parent_id, limit, offset])
         for (let i = 0; i < products.length; i++) {
-            const imageList = await db.queryMulti(sqlImageList, products[i].id)
+            const imageList = await db.queryMulti(sqlImageList, [productsParent[i].id])
+            const variants = await db.queryMulti(sqlVartiant, [productsParent[i].id])
+            const comments = await db.queryMulti(sqlComment, [productsParent[i].id])
+            data.push({
+                id: productsParent[i].id,
+                name: productsParent[i].name,
+                category: productsParent[i].category,
+                producer: productsParent[i].producer,
+                description: productsParent[i].detail,
+                instock: productsParent[i].instock,
+                number_buy: productsParent[i].number_buy,
+                price: productsParent[i].price,
+                create_at: productsParent[i].create_at,
+                create_by: productsParent[i].create_by,
+                modified_by: productsParent[i].modified_by,
+                modified_at: productsParent[i].modified_at,
+                status: productsParent[i].status,
+                variants: variants,
+                imageList: imageList,
+                comments: comments
+            })
+        }
+        const products = await db.queryMulti(sqlChild, [categoryId, limit, offset])
+        for (let i = 0; i < products.length; i++) {
+            const imageList = await db.queryMulti(sqlImageList, [products[i].id])
+            const variants = await db.queryMulti(sqlVartiant, [products[i].id])
+            const comments = await db.queryMulti(sqlComment, [products[i].id])
             data.push({
                 id: products[i].id,
                 name: products[i].name,
                 category: products[i].category,
                 producer: products[i].producer,
-                description: products[i].description,
+                description: products[i].detail,
                 instock: products[i].instock,
                 number_buy: products[i].number_buy,
                 price: products[i].price,
@@ -532,7 +722,9 @@ const getProductByCategoryIDSortedByTime = async (categoryId, { limit, offset })
                 modified_by: products[i].modified_by,
                 modified_at: products[i].modified_at,
                 status: products[i].status,
-                imageList: imageList
+                variants: variants,
+                imageList: imageList,
+                comments: comments
             })
         }
         const countsql = `
@@ -552,13 +744,15 @@ const getProductByCategoryIDSortedByTime = async (categoryId, { limit, offset })
     } else if (parent_id > 0) {
         const products = await db.queryMulti(sqlChild, [categoryId, limit, offset])
         for (let i = 0; i < products.length; i++) {
-            const imageList = await db.queryMulti(sqlImageList, products[i].id)
+            const imageList = await db.queryMulti(sqlImageList, [products[i].id])
+            const variants = await db.queryMulti(sqlVartiant, [products[i].id])
+            const comments = await db.queryMulti(sqlComment, [products[i].id])
             data.push({
                 id: products[i].id,
                 name: products[i].name,
                 category: products[i].category,
                 producer: products[i].producer,
-                description: products[i].description,
+                description: products[i].detail,
                 instock: products[i].instock,
                 number_buy: products[i].number_buy,
                 price: products[i].price,
@@ -567,7 +761,9 @@ const getProductByCategoryIDSortedByTime = async (categoryId, { limit, offset })
                 modified_by: products[i].modified_by,
                 modified_at: products[i].modified_at,
                 status: products[i].status,
-                imageList: imageList
+                variants: variants,
+                imageList: imageList,
+                comments: comments
             })
         }
         const countsql = `
@@ -592,7 +788,7 @@ const getProductByCategoryIDSortedByNumberBuy = async (categoryId, { limit, offs
     where id = ? and trash = 0
     `
     const sqlChild = `
-    select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer, db_product.description, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
+    select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer,db_product.detail, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
     from db_product
     inner join db_category on db_category.id = db_product.catid
     inner join db_producer on db_producer.id = db_product.producer
@@ -604,7 +800,7 @@ const getProductByCategoryIDSortedByNumberBuy = async (categoryId, { limit, offs
     offset ?;
     `
     const sqlParent = `
-    select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer, db_product.description, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
+    select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer,db_product.detail, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
     from db_product
     inner join db_category on db_category.id = db_product.catid
     inner join db_producer on db_producer.id = db_product.producer
@@ -620,18 +816,54 @@ const getProductByCategoryIDSortedByNumberBuy = async (categoryId, { limit, offs
     from db_product_image
     where productID = ?
     `
+    const sqlVartiant = `
+    select id, color, imageID as image_id, productID
+    from db_product_variant
+    where productID = ?
+    `
+    const sqlComment = `
+    select id, productID, username, comment, modified_at
+    from db_product_comment
+    where productID = ?
+    `
     var data = []
     const { parent_id } = await db.queryOne(sqlCheckCatParent, [categoryId])
     if (parent_id == 0) {
-        const products = await db.queryMulti(sqlParent, [parent_id, limit, offset])
+        const productsParent = await db.queryMulti(sqlParent, [parent_id, limit, offset])
         for (let i = 0; i < products.length; i++) {
-            const imageList = await db.queryMulti(sqlImageList, products[i].id)
+            const imageList = await db.queryMulti(sqlImageList, [productsParent[i].id])
+            const variants = await db.queryMulti(sqlVartiant, [productsParent[i].id])
+            const comments = await db.queryMulti(sqlComment, [productsParent[i].id])
+            data.push({
+                id: productsParent[i].id,
+                name: productsParent[i].name,
+                category: productsParent[i].category,
+                producer: productsParent[i].producer,
+                description: productsParent[i].detail,
+                instock: productsParent[i].instock,
+                number_buy: productsParent[i].number_buy,
+                price: productsParent[i].price,
+                create_at: productsParent[i].create_at,
+                create_by: productsParent[i].create_by,
+                modified_by: productsParent[i].modified_by,
+                modified_at: productsParent[i].modified_at,
+                status: productsParent[i].status,
+                variants: variants,
+                imageList: imageList,
+                comments: comments
+            })
+        }
+        const products = await db.queryMulti(sqlChild, [categoryId, limit, offset])
+        for (let i = 0; i < products.length; i++) {
+            const imageList = await db.queryMulti(sqlImageList, [products[i].id])
+            const variants = await db.queryMulti(sqlVartiant, [products[i].id])
+            const comments = await db.queryMulti(sqlComment, [products[i].id])
             data.push({
                 id: products[i].id,
                 name: products[i].name,
                 category: products[i].category,
                 producer: products[i].producer,
-                description: products[i].description,
+                description: products[i].detail,
                 instock: products[i].instock,
                 number_buy: products[i].number_buy,
                 price: products[i].price,
@@ -640,7 +872,9 @@ const getProductByCategoryIDSortedByNumberBuy = async (categoryId, { limit, offs
                 modified_by: products[i].modified_by,
                 modified_at: products[i].modified_at,
                 status: products[i].status,
-                imageList: imageList
+                variants: variants,
+                imageList: imageList,
+                comments: comments
             })
         }
         const countsql = `
@@ -660,13 +894,15 @@ const getProductByCategoryIDSortedByNumberBuy = async (categoryId, { limit, offs
     } else if (parent_id > 0) {
         const products = await db.queryMulti(sqlChild, [categoryId, limit, offset])
         for (let i = 0; i < products.length; i++) {
-            const imageList = await db.queryMulti(sqlImageList, products[i].id)
+            const imageList = await db.queryMulti(sqlImageList, [products[i].id])
+            const variants = await db.queryMulti(sqlVartiant, [products[i].id])
+            const comments = await db.queryMulti(sqlComment, [products[i].id])
             data.push({
                 id: products[i].id,
                 name: products[i].name,
                 category: products[i].category,
                 producer: products[i].producer,
-                description: products[i].description,
+                description: products[i].detail,
                 instock: products[i].instock,
                 number_buy: products[i].number_buy,
                 price: products[i].price,
@@ -675,7 +911,9 @@ const getProductByCategoryIDSortedByNumberBuy = async (categoryId, { limit, offs
                 modified_by: products[i].modified_by,
                 modified_at: products[i].modified_at,
                 status: products[i].status,
-                imageList: imageList
+                variants: variants,
+                imageList: imageList,
+                comments: comments
             })
         }
         const countsql = `
@@ -700,7 +938,7 @@ const getProductByCategoryIDSortedByPriceASC = async (categoryId, { limit, offse
     where id = ? and trash = 0
     `
     const sqlChild = `
-    select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer, db_product.description, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
+    select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer,db_product.detail, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
     from db_product
     inner join db_category on db_category.id = db_product.catid
     inner join db_producer on db_producer.id = db_product.producer
@@ -712,7 +950,7 @@ const getProductByCategoryIDSortedByPriceASC = async (categoryId, { limit, offse
     offset ?;
     `
     const sqlParent = `
-    select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer, db_product.description, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
+    select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer,db_product.detail, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
     from db_product
     inner join db_category on db_category.id = db_product.catid
     inner join db_producer on db_producer.id = db_product.producer
@@ -728,18 +966,54 @@ const getProductByCategoryIDSortedByPriceASC = async (categoryId, { limit, offse
     from db_product_image
     where productID = ?
     `
+    const sqlVartiant = `
+    select id, color, imageID as image_id, productID
+    from db_product_variant
+    where productID = ?
+    `
+    const sqlComment = `
+    select id, productID, username, comment, modified_at
+    from db_product_comment
+    where productID = ?
+    `
     var data = []
     const { parent_id } = await db.queryOne(sqlCheckCatParent, [categoryId])
     if (parent_id == 0) {
-        const products = await db.queryMulti(sqlParent, [parent_id, limit, offset])
+        const productsParent = await db.queryMulti(sqlParent, [parent_id, limit, offset])
         for (let i = 0; i < products.length; i++) {
-            const imageList = await db.queryMulti(sqlImageList, products[i].id)
+            const imageList = await db.queryMulti(sqlImageList, [productsParent[i].id])
+            const variants = await db.queryMulti(sqlVartiant, [productsParent[i].id])
+            const comments = await db.queryMulti(sqlComment, [productsParent[i].id])
+            data.push({
+                id: productsParent[i].id,
+                name: productsParent[i].name,
+                category: productsParent[i].category,
+                producer: productsParent[i].producer,
+                description: productsParent[i].detail,
+                instock: productsParent[i].instock,
+                number_buy: productsParent[i].number_buy,
+                price: productsParent[i].price,
+                create_at: productsParent[i].create_at,
+                create_by: productsParent[i].create_by,
+                modified_by: productsParent[i].modified_by,
+                modified_at: productsParent[i].modified_at,
+                status: productsParent[i].status,
+                variants: variants,
+                imageList: imageList,
+                comments: comments
+            })
+        }
+        const products = await db.queryMulti(sqlChild, [categoryId, limit, offset])
+        for (let i = 0; i < products.length; i++) {
+            const imageList = await db.queryMulti(sqlImageList, [products[i].id])
+            const variants = await db.queryMulti(sqlVartiant, [products[i].id])
+            const comments = await db.queryMulti(sqlComment, [products[i].id])
             data.push({
                 id: products[i].id,
                 name: products[i].name,
                 category: products[i].category,
                 producer: products[i].producer,
-                description: products[i].description,
+                description: products[i].detail,
                 instock: products[i].instock,
                 number_buy: products[i].number_buy,
                 price: products[i].price,
@@ -748,7 +1022,9 @@ const getProductByCategoryIDSortedByPriceASC = async (categoryId, { limit, offse
                 modified_by: products[i].modified_by,
                 modified_at: products[i].modified_at,
                 status: products[i].status,
-                imageList: imageList
+                variants: variants,
+                imageList: imageList,
+                comments: comments
             })
         }
         const countsql = `
@@ -768,13 +1044,15 @@ const getProductByCategoryIDSortedByPriceASC = async (categoryId, { limit, offse
     } else if (parent_id > 0) {
         const products = await db.queryMulti(sqlChild, [categoryId, limit, offset])
         for (let i = 0; i < products.length; i++) {
-            const imageList = await db.queryMulti(sqlImageList, products[i].id)
+            const imageList = await db.queryMulti(sqlImageList, [products[i].id])
+            const variants = await db.queryMulti(sqlVartiant, [products[i].id])
+            const comments = await db.queryMulti(sqlComment, [products[i].id])
             data.push({
                 id: products[i].id,
                 name: products[i].name,
                 category: products[i].category,
                 producer: products[i].producer,
-                description: products[i].description,
+                description: products[i].detail,
                 instock: products[i].instock,
                 number_buy: products[i].number_buy,
                 price: products[i].price,
@@ -783,7 +1061,9 @@ const getProductByCategoryIDSortedByPriceASC = async (categoryId, { limit, offse
                 modified_by: products[i].modified_by,
                 modified_at: products[i].modified_at,
                 status: products[i].status,
-                imageList: imageList
+                variants: variants,
+                imageList: imageList,
+                comments: comments
             })
         }
         const countsql = `
@@ -808,7 +1088,7 @@ const getProductByCategoryIDSortedByPriceDESC = async (categoryId, { limit, offs
     where id = ? and trash = 0
     `
     const sqlChild = `
-    select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer, db_product.description, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
+    select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer,db_product.detail, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
     from db_product
     inner join db_category on db_category.id = db_product.catid
     inner join db_producer on db_producer.id = db_product.producer
@@ -820,7 +1100,7 @@ const getProductByCategoryIDSortedByPriceDESC = async (categoryId, { limit, offs
     offset ?;
     `
     const sqlParent = `
-    select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer, db_product.description, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
+    select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer,db_product.detail, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
     from db_product
     inner join db_category on db_category.id = db_product.catid
     inner join db_producer on db_producer.id = db_product.producer
@@ -836,18 +1116,54 @@ const getProductByCategoryIDSortedByPriceDESC = async (categoryId, { limit, offs
     from db_product_image
     where productID = ?
     `
+    const sqlVartiant = `
+    select id, color, imageID as image_id, productID
+    from db_product_variant
+    where productID = ?
+    `
+    const sqlComment = `
+    select id, productID, username, comment, modified_at
+    from db_product_comment
+    where productID = ?
+    `
     var data = []
     const { parent_id } = await db.queryOne(sqlCheckCatParent, [categoryId])
     if (parent_id == 0) {
-        const products = await db.queryMulti(sqlParent, [parent_id, limit, offset])
+        const productsParent = await db.queryMulti(sqlParent, [parent_id, limit, offset])
         for (let i = 0; i < products.length; i++) {
-            const imageList = await db.queryMulti(sqlImageList, products[i].id)
+            const imageList = await db.queryMulti(sqlImageList, [productsParent[i].id])
+            const variants = await db.queryMulti(sqlVartiant, [productsParent[i].id])
+            const comments = await db.queryMulti(sqlComment, [productsParent[i].id])
+            data.push({
+                id: productsParent[i].id,
+                name: productsParent[i].name,
+                category: productsParent[i].category,
+                producer: productsParent[i].producer,
+                description: productsParent[i].detail,
+                instock: productsParent[i].instock,
+                number_buy: productsParent[i].number_buy,
+                price: productsParent[i].price,
+                create_at: productsParent[i].create_at,
+                create_by: productsParent[i].create_by,
+                modified_by: productsParent[i].modified_by,
+                modified_at: productsParent[i].modified_at,
+                status: productsParent[i].status,
+                variants: variants,
+                imageList: imageList,
+                comments: comments
+            })
+        }
+        const products = await db.queryMulti(sqlChild, [categoryId, limit, offset])
+        for (let i = 0; i < products.length; i++) {
+            const imageList = await db.queryMulti(sqlImageList, [products[i].id])
+            const variants = await db.queryMulti(sqlVartiant, [products[i].id])
+            const comments = await db.queryMulti(sqlComment, [products[i].id])
             data.push({
                 id: products[i].id,
                 name: products[i].name,
                 category: products[i].category,
                 producer: products[i].producer,
-                description: products[i].description,
+                description: products[i].detail,
                 instock: products[i].instock,
                 number_buy: products[i].number_buy,
                 price: products[i].price,
@@ -856,7 +1172,9 @@ const getProductByCategoryIDSortedByPriceDESC = async (categoryId, { limit, offs
                 modified_by: products[i].modified_by,
                 modified_at: products[i].modified_at,
                 status: products[i].status,
-                imageList: imageList
+                variants: variants,
+                imageList: imageList,
+                comments: comments
             })
         }
         const countsql = `
@@ -876,13 +1194,15 @@ const getProductByCategoryIDSortedByPriceDESC = async (categoryId, { limit, offs
     } else if (parent_id > 0) {
         const products = await db.queryMulti(sqlChild, [categoryId, limit, offset])
         for (let i = 0; i < products.length; i++) {
-            const imageList = await db.queryMulti(sqlImageList, products[i].id)
+            const imageList = await db.queryMulti(sqlImageList, [products[i].id])
+            const variants = await db.queryMulti(sqlVartiant, [products[i].id])
+            const comments = await db.queryMulti(sqlComment, [products[i].id])
             data.push({
                 id: products[i].id,
                 name: products[i].name,
                 category: products[i].category,
                 producer: products[i].producer,
-                description: products[i].description,
+                description: products[i].detail,
                 instock: products[i].instock,
                 number_buy: products[i].number_buy,
                 price: products[i].price,
@@ -891,7 +1211,9 @@ const getProductByCategoryIDSortedByPriceDESC = async (categoryId, { limit, offs
                 modified_by: products[i].modified_by,
                 modified_at: products[i].modified_at,
                 status: products[i].status,
-                imageList: imageList
+                variants: variants,
+                imageList: imageList,
+                comments: comments
             })
         }
         const countsql = `
@@ -911,7 +1233,7 @@ const getProductByCategoryIDSortedByPriceDESC = async (categoryId, { limit, offs
 }
 const getProductByProducerID = async (producerId, { limit, offset }) => {
     const sql = `
-    select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer, db_product.description, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
+    select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer,db_product.detail, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
     from db_product
     inner join db_category on db_category.id = db_product.catid
     inner join db_producer on db_producer.id = db_product.producer
@@ -924,16 +1246,28 @@ const getProductByProducerID = async (producerId, { limit, offset }) => {
     from db_product_image
     where productID = ?
     `
+    const sqlVartiant = `
+    select id, color, imageID as image_id, productID
+    from db_product_variant
+    where productID = ?
+    `
+    const sqlComment = `
+    select id, productID, username, comment, modified_at
+    from db_product_comment
+    where productID = ?
+    `
     var data = []
     const products = await db.queryMulti(sql, [producerId, limit, offset])
     for (let i = 0; i < products.length; i++) {
-        const imageList = await db.queryMulti(sqlImageList, products[i].id)
+        const imageList = await db.queryMulti(sqlImageList, [products[i].id])
+        const variants = await db.queryMulti(sqlVartiant, [products[i].id])
+        const comments = await db.queryMulti(sqlComment, [products[i].id])
         data.push({
             id: products[i].id,
             name: products[i].name,
             category: products[i].category,
             producer: products[i].producer,
-            description: products[i].description,
+            description: products[i].detail,
             instock: products[i].instock,
             number_buy: products[i].number_buy,
             price: products[i].price,
@@ -942,7 +1276,9 @@ const getProductByProducerID = async (producerId, { limit, offset }) => {
             modified_by: products[i].modified_by,
             modified_at: products[i].modified_at,
             status: products[i].status,
-            imageList: imageList
+            variants: variants,
+            imageList: imageList,
+            comments: comments
         })
     }
     const countsql = `
@@ -958,17 +1294,17 @@ const getProductByProducerID = async (producerId, { limit, offset }) => {
         }
     }
 }
-const createProduct = async ({ catid, name, videoUrl, description, detail, producer, instock, price }) => {
+const createProduct = async ({ catid, name, videoUrl, detail, producer, instock, price }) => {
     const sql = `
-    insert into db_product (id, catid, \`name\`,  videoUrl,description, detail, feedBack, producer, instock, number_buy, price)
-    values(uuid(),?,?,?,?,?,'Đang cập nhật',?,?,0,?);
+    insert into db_product (id, catid, \`name\`,  videoUrl,detail, detail, producer, instock, number_buy, price)
+    values(uuid(),?,?,?,?,?,?,?,0,?);
     `
     const sqlID = `
     select id
     from db_product
     where \`name\` = ?;
     `
-    await db.query(sql, [catid, name, videoUrl, description, detail, producer, Number(instock), Number(price)])
+    await db.query(sql, [catid, name, videoUrl, detail, producer, Number(instock), Number(price)])
     const { id } = await db.queryOne(sqlID, [name])
     return {
         id
@@ -985,18 +1321,7 @@ const createProductImage = async (files, id) => {
     `
     await db.query(sql, [values])
 }
-const createProductAvatar = async (files, id) => {
-    var values = new Array();
-    for (let i = 0; i < files.length; i++) {
-        values.push([uuidv4.v4(), files[i].location, files[i].mimetype, files[i].size, id])
-    }
-    const sql = `
-    insert into db_product_avatar (\`id\`, \`avatar\`,\`type\`,\`size\`,\`productID\`) values 
-    ?
-    `
-    await db.query(sql, [values])
-}
-const updateProductByID = async ({ name, videoUrl, detail, feedBack, producer, instock, price, catid, productID }) => {
+const updateProductByID = async ({ name, videoUrl, detail, producer, instock, price, catid, productID }) => {
     const sqlCountBuy = `
     select sum(quantity) as number_buy
     from db_orderdetail
@@ -1010,7 +1335,6 @@ const updateProductByID = async ({ name, videoUrl, detail, feedBack, producer, i
     videoUrl =?,
     description =?,
     detail = ?, 
-    feedBack =?,
     producer = ?, 
     instock = ?, 
     number_buy = ?, 
@@ -1063,7 +1387,6 @@ module.exports = {
     getProductByCategoryIDSortedByTime,
     createProduct,
     createProductImage,
-    createProductAvatar,
     updateProductByID,
     deleteProductByID,
     parameterProduct,

@@ -34,9 +34,9 @@ const createCustomer = async (req, res) => {
     const file = req.file;
     if (!file) {
         const error = new Error('Please choose file')
-        return next(error)
+        return { error }
     }
-    const {id} = await customerService.createCustomer(req.body)
+    const { id } = await customerService.createCustomer(req.body)
     await customerService.createCustomerAvatar(file.path, file.mimetype, file.size, id)
     res.send({
         status: 1,

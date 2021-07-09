@@ -1,15 +1,7 @@
 const orderService = require('../services/order')
 const security = require('../utils/security')
-const getAllGuestOrder = async (req, res) => {
-    const { data, metadata } = await orderService.getAllGuestOrder(req.pagination)
-    res.send({
-        status: 1,
-        metadata,
-        data
-    })
-}
-const getAllCustomerOrder = async (req, res) => {
-    const { data, metadata } = await orderService.getAllCustomerOrder(req.pagination)
+const getAllOrder = async (req, res) => {
+    const { data, metadata } = await orderService.getAllOrder(req.pagination)
     res.send({
         status: 1,
         metadata,
@@ -26,19 +18,19 @@ const getGuestOrderbyPhone = async (req, res) => {
     })
 }
 const getCustomerOrderbyId = async (req, res) => {
-    const { id } = req.params;
-    const { data, orderDetail } = await orderService.getCustomerOrderbyId(id)
+    const token = req.headers.authorization.split(' ')[1]
+    const decodedToken = security.verifyToken(token)
+    const customerId = decodedToken.customerId
+    const { data, orderDetail } = await orderService.getCustomerOrderbyId(customerId)
     res.send({
         status: 1,
         data,
         orderDetail
     })
 }
-const getCustomerOrderInfo = async (req, res) => {
-    const token = req.headers.authorization.split(' ')[1]
-    const decodedToken = security.verifyToken(token)
-    const customerId = decodedToken.customerId
-    const { data, orderDetail } = await orderService.getCustomerOrderInfo(customerId)
+const getOrderByID = async (req, res) => {
+    const {orderCode} = req.params
+    const { data, orderDetail } = await orderService.getOrderByID(orderCode)
     res.send({
         status: 1,
         data,
@@ -63,22 +55,7 @@ const createCustomerOrder = async (req, res) => {
         message: "Tao order thanh cong"
     })
 }
-const updateGuestOrderById = async (req, res) => {
-    const { id } = req.params;
-    await orderService.updateGuestOrderById(req.body, id)
-    res.send({
-        status: 1,
-        message:"update order thanh cong"
-    })
-}
-const updateCustomerOrderById = async (req, res) => {
-    const { id } = req.params;
-    await orderService.updateCustomerOrderById(req.body, id)
-    res.send({
-        status: 1,
-        message:"update order thanh cong"
-    })
-}
+
 const deleteOrderById = async (req, res) => {
     const { id } = req.params
     await orderService.deleteOrderbyID(id)
@@ -89,14 +66,11 @@ const deleteOrderById = async (req, res) => {
 
 }
 module.exports = {
-    getAllGuestOrder,
-    getAllCustomerOrder,
+    getAllOrder,
     getGuestOrderbyPhone,
     getCustomerOrderbyId,
-    getCustomerOrderInfo,
+    getOrderByID,
     createGuestOrder,
     createCustomerOrder,
-    updateGuestOrderById,
-    updateCustomerOrderById,
     deleteOrderById,
 }

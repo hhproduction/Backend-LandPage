@@ -40,7 +40,7 @@ const productRouter = require('./src/routers/product')
 const orderRouter = require('./src/routers/order')
 const accountRouter = require('./src/routers/account')
 const customerRouter = require('./src/routers/customer')
-const orderDetailRouter = require('./src/routers/orderDetail')
+// const orderDetailRouter = require('./src/routers/orderDetail')
 const provinceRouter = require('./src/routers/province')
 const districtRouter = require('./src/routers/district')
 const producerRouter = require('./src/routers/producer')
@@ -55,7 +55,7 @@ app.use('/api/v1/product', productRouter);
 app.use('/api/v1/order', orderRouter);
 app.use('/api/v1/admin', accountRouter);
 app.use('/api/v1/customer', customerRouter);
-app.use('/api/v1/orderDetail', orderDetailRouter);
+// app.use('/api/v1/orderDetail', orderDetailRouter);
 app.use('/api/v1/province', provinceRouter);
 app.use('/api/v1/district', districtRouter);
 app.use('/api/v1/producer', producerRouter);

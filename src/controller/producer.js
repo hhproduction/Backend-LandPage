@@ -11,7 +11,7 @@ const createProducer = async (req, res) => {
     const file = req.file;
     if (!file) {
         const error = new Error('Please choose file')
-        return next(error)
+        return {error}
     }
     await producerService.createProducer(req.body, file)
     res.send({

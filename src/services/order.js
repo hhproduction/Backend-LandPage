@@ -1,18 +1,18 @@
 const db = require('../utils/db')
 //Guest co status = 0
-const getAllGuestOrder = async ({ limit, offset }) => {
+const getAllOrder = async ({ limit, offset }) => {
     const sql = `
-    select CONCAT(db_order.prefix,db_order.orderCode) as orderID, db_order.orderdate, db_order.fullname, db_order.phone, db_order.money, db_province.\`name\` as province, db_district.\`name\` as district, db_order.address, db_order.payment, db_order.note, db_order.created_at, db_order.modified_at, db_order.\`status\`
+    select CONCAT(db_order.prefix,db_order.orderCode) as orderID, db_order.totalPrice, db_order.created_at as orderDate, db_order.\`status\`
     from db_order
     inner join db_province on db_province.id = db_order.province
     inner join db_district on db_district.id = db_order.district
-    where db_order.trash = 0 and db_order.\`status\` = 0
+    where db_order.trash = 0 
     limit  ?
     offset  ?
     `
     const data = await db.queryMulti(sql, [limit, offset])
     const countsql = `
-    select count(orderCode) as total from db_order where \`status\` = 0;
+    select count(orderCode) as total from db_order
     `
     const { total } = await db.queryOne(countsql)
     return {
@@ -23,47 +23,23 @@ const getAllGuestOrder = async ({ limit, offset }) => {
         }
     }
 }
-//customer co status = 1
-const getAllCustomerOrder = async ({limit, offset})=>{
-    const sql=`
-    select CONCAT(db_order.prefix,db_order.orderCode) as orderID,db_order.customerid, db_order.orderdate, db_customer.fullname, db_customer.phone, db_order.money,db_province.\`name\` as province, db_district.\`name\` as district, db_customer.address, db_order.payment, db_order.note, db_order.created_at, db_order.modified_at, db_order.\`status\`
-    from db_order
-    inner join db_customer on db_customer.id = db_order.customerid
-    inner join db_province on db_province.id = db_customer.province
-    inner join db_district on db_district.id = db_customer.district
-    where db_order.trash  = 0 and db_order.\`status\` = 1
-    limit  ?
-    offset  ?;
-    `
-    const data = await db.queryMulti(sql, [limit, offset])
-    const countsql = `
-    select count(orderCode) as total from db_order where   \`status\` = 1;
-    `
-    const { total } = await db.queryOne(countsql)
-    return {
-        data,
-        metadata: {
-            length: data.length,
-            total
-        }
-    }
-}
+
 const getGuestOrderbyPhone = async (id) => {
     const sql = `
-    select CONCAT(db_order.prefix,db_order.orderCode) as orderID, db_order.orderdate, db_order.fullname, db_order.phone, db_order.money, db_province.\`name\` as province, db_district.\`name\` as district, db_order.address, db_order.payment, db_order.note, db_order.created_at, db_order.modified_at, db_order.\`status\`
+    select CONCAT(db_order.prefix,db_order.orderCode) as orderID,db_order.customerid, db_order.fullname, db_order.phone, db_order.totalPrice,db_province.\`name\` as province, db_district.\`name\` as district, db_order.address, db_order.payment, db_order.note, db_order.created_at, db_order.modified_at, db_order.\`status\`, db_order.isCustomer
     from db_order
     inner join db_province on db_province.id = db_order.province
     inner join db_district on db_district.id = db_order.district
-    where db_order.trash = 0 and db_order.\`status\` = 0 and db_order.phone = ?;
+    where db_order.trash = 0 and db_order.\`isCustomer\` = 0 and db_order.phone = ?;
     `
     const sqlOrderCode = `
     select orderCode
     from db_order
-    where phone = ? and trash = 0 and \`status\` = 0;
+    where phone = ? and trash = 0 and \`isCustomer\` = 0;
     `
     const orderCode = await db.queryOne(sqlOrderCode, id)
     const sqlOrderDetail = `
-    select db_orderdetail.id, db_orderdetail.orderid, db_product.\`name\`,db_product_image.image, db_product.price, db_product.instock, db_orderdetail.quantity, db_orderdetail.price as totalPrice, db_orderdetail.note
+    select db_orderdetail.id, db_orderdetail.orderid, db_product.\`name\`,db_product_image.image, db_product.price, db_product.instock, db_orderdetail.quantity, db_orderdetail.price as totalDetailPrice
     from db_orderdetail
     inner join db_product on db_product.id = db_orderdetail.productid
     inner join db_product_image on db_product_image.productID = db_orderdetail.productid
@@ -79,12 +55,12 @@ const getGuestOrderbyPhone = async (id) => {
 }
 const getCustomerOrderbyId = async (id) => {
     const sql = `
-    select CONCAT(db_order.prefix,db_order.orderCode) as orderID,db_order.customerid, db_order.orderdate, db_customer.fullname, db_customer.phone, db_order.money,db_province.\`name\` as province, db_district.\`name\` as district, db_customer.address, db_order.payment, db_order.note, db_order.created_at, db_order.modified_at, db_order.\`status\`
+    select CONCAT(db_order.prefix,db_order.orderCode) as orderID,db_order.customerid, db_customer.fullname, db_customer.phone, db_order.totalPrice,db_province.\`name\` as province, db_district.\`name\` as district, db_customer.address, db_order.payment, db_order.note, db_order.created_at, db_order.modified_at, db_order.\`status\`, db_order.isCustomer
     from db_order
     inner join db_customer on db_customer.id = db_order.customerid
     inner join db_province on db_province.id = db_customer.province
     inner join db_district on db_district.id = db_customer.district
-    where db_order.trash  = 0 and db_order.\`status\` = 1 and db_order.customerid = ?;
+    where db_order.trash  = 0 and db_order.\`isCustomer\` = 1 and db_order.customerid = ?;
     `
     const sqlOrderCode = `
     select orderCode
@@ -93,7 +69,7 @@ const getCustomerOrderbyId = async (id) => {
     `
     const orderCode = await db.queryOne(sqlOrderCode, id)
     const sqlOrderDetail = `
-    select db_orderdetail.id, db_orderdetail.orderid, db_product.\`name\`,db_product_image.image, db_product.price, db_product.instock, db_orderdetail.quantity, db_orderdetail.price as totalPrice, db_orderdetail.note
+    select db_orderdetail.id, db_orderdetail.orderid, db_product.\`name\`,db_product_image.image, db_product.price, db_product.instock, db_orderdetail.quantity, db_orderdetail.price as totalDetailPrice
     from db_orderdetail
     inner join db_product on db_product.id = db_orderdetail.productid
     inner join db_product_image on db_product_image.productID = db_orderdetail.productid
@@ -107,97 +83,151 @@ const getCustomerOrderbyId = async (id) => {
         orderDetail
     }
 }
-const getCustomerOrderInfo = async (customerId) => {
-    const sql = `
-    select CONCAT(db_order.prefix,db_order.orderCode) as orderID,db_order.customerid, db_order.orderdate, db_customer.fullname, db_customer.phone, db_order.money,db_province.\`name\` as province, db_district.\`name\` as district, db_customer.address, db_order.payment, db_order.note, db_order.created_at, db_order.modified_at, db_order.\`status\`
+const getOrderByID = async (orderCode) => {
+    const sqlCheck = `
+    select isCustomer
+    from db_order
+    where orderCode = ?
+    `
+    const sqlCustomer = `
+    select CONCAT(db_order.prefix,db_order.orderCode) as orderID,db_order.customerid, db_customer.fullname, db_customer.phone, db_order.totalPrice,db_province.\`name\` as province, db_district.\`name\` as district, db_customer.address, db_order.payment, db_order.note, db_order.created_at, db_order.modified_at, db_order.\`status\`, db_order.isCustomer
     from db_order
     inner join db_customer on db_customer.id = db_order.customerid
     inner join db_province on db_province.id = db_customer.province
     inner join db_district on db_district.id = db_customer.district
-    where db_order.trash  = 0 and db_order.\`status\` = 1 and db_order.customerid = ?;
+    where db_order.trash  = 0 and db_order.\`isCustomer\` = 1 and db_order.orderCode = ?;
     `
-    const sqlOrderCode = `
-    select orderCode
+    const sqlGuest = `
+    select CONCAT(db_order.prefix,db_order.orderCode) as orderID,db_order.customerid, db_order.fullname, db_order.phone, db_order.totalPrice,db_province.\`name\` as province, db_district.\`name\` as district, db_order.address, db_order.payment, db_order.note, db_order.created_at, db_order.modified_at, db_order.\`status\`, db_order.isCustomer
     from db_order
-    where customerid = ? and trash = 0 and \`status\` = 1;
+    inner join db_customer on db_customer.id = db_order.customerid
+    inner join db_province on db_province.id = db_order.province
+    inner join db_district on db_district.id = db_order.district
+    where db_order.trash  = 0 and db_order.\`isCustomer\` = 0 and db_order.orderCode = ?;
     `
-    const orderCode = await db.queryOne(sqlOrderCode, customerId)
+
     const sqlOrderDetail = `
-    select db_orderdetail.id, db_orderdetail.orderid, db_product.\`name\`,db_product_image.image, db_product.price, db_product.instock, db_orderdetail.quantity, db_orderdetail.price as totalPrice, db_orderdetail.note
+    select db_orderdetail.id, db_orderdetail.orderid, db_product.\`name\`,db_product_image.image, db_product.price, db_product.instock, db_orderdetail.quantity, db_orderdetail.price as totalDetailPrice
     from db_orderdetail
     inner join db_product on db_product.id = db_orderdetail.productid
     inner join db_product_image on db_product_image.productID = db_orderdetail.productid
     where db_orderdetail.trash = 0 and db_orderdetail.orderid = ?
     group by db_orderdetail.productid;
     `
-    const data = await db.queryOne(sql, [customerId])
-    const orderDetail = await db.queryMulti(sqlOrderDetail, orderCode.orderCode)
-    return {
-        data,
-        orderDetail
+    const { isCustomer } = await db.queryOne(sqlCheck, orderCode)
+    if (isCustomer) {
+        const data = await db.queryOne(sqlCustomer, [orderCode])
+        const orderInfo = await db.queryMulti(sqlOrderDetail, orderCode)
+        return {
+            data,
+            orderInfo
+        }
+    } else if (!isCustomer) {
+        const data = await db.queryOne(sqlGuest, [orderCode])
+        const orderInfo = await db.queryMulti(sqlOrderDetail, orderCode)
+        return {
+            data,
+            orderInfo
+        }
     }
 }
-const createGuestOrder = async ({  orderdate, fullname, phone, money, province, district, address, payment, note }) => {
+const createGuestOrder = async ({ fullname, phone, province, district, address, note }) => {
     const sql = `
-    insert into db_order(customerid,orderdate,fullname,phone, money, province, district, address, payment, note, \`status\`)
-    values(null,?,?,?,?,?,?,?,?,?,?);
+    insert into db_order(customerid,fullname,phone, province, district, address, totalPrice, note, \`isCustomer\`)
+    values(null,?,?,?,?,?,0,?,0);
     `
-    const statusOrder = 0;
-    await db.query(sql, [ orderdate, fullname, phone, money, province, district, address, payment, note, statusOrder])
+    const sqlGetID = `
+    select orderCode
+    from db_order
+    where phone = ?
+    `
+    await db.query(sql, [fullname, phone, province, district, address, note])
+    const { orderCode } = await db.queryOne(sqlGetID, [phone])
+    return {
+        orderCode
+    }
 }
-const createCustomerOrder = async (customerid,{ orderdate, money, payment, note }) => {
+const createCustomerOrder = async (customerid, { note }) => {
     const sql = `
-    insert into db_order(customerid,orderdate,fullname,phone, money, province, district, address, payment, note)
-    values(?,?,null,null,?,null,null,null,?,?);
+    insert into db_order(customerid,fullname,phone, province, district, address,totalPrice, note)
+    values(?,null,null,null,null,null,0,?);
     `
-    await db.query(sql, [ customerid, orderdate, money, payment, note])
+    const sqlGetID = `
+    select orderCode
+    from db_order
+    where phone = ?
+    `
+    await db.query(sql, [customerid, note])
+    const { orderCode } = await db.queryOne(sqlGetID, [phone])
+    return {
+        orderCode
+    }
 }
-const updateGuestOrderById = async ({ orderdate, fullname, phone, province, district, address, payment, note }, id) => {
-    const totalMoney = `
-    select SUM(price) as money 
+const createOrderDetail = async ({ listOrdersDetail }, orderId) => {
+    const sqlGetPrice = `
+    select price
+    from db_product
+    where trash = 0 and id = ?;
+    `
+    const sqlCheck = `
+    select count(id) as total
+    from db_discount
+    where productid=?
+    `
+    const sqlCheckDiscount = `
+    select discount_condition, percent
+    from db_discount
+    where productid = ?
+    `
+    const sql = `
+    insert into db_orderdetail(id, orderid, productid, quantity, price)
+    values(uuid(),?,?,?,?,?)
+    `
+    const sqlTotalPrice = `
+    select sum(price) as totalPrice
     from db_orderdetail
-    where trash = 0 and orderid = ?
+    where orderid = ?
     `
-    const money = db.queryOne(totalMoney,[id])
-    const sql = `
+    const sqlUpdatePrice = `
     update db_order
-    set orderdate=?,
-    fullname = ?,
-    phone = ?,
-    money = ?,
-    province = ?,
-    district = ?,
-    address = ?,
-    payment = ?,
-    note=?
-    where orderCode = ? and trash = 0 and \`status\`=0;
+    set totalPrice = ?
+    where id = ? 
     `
-    await db.query(sql, [orderdate, fullname, phone, money, province, district, address, payment, note, id])
+    for (let i = 0; i < listOrdersDetail.length; i++) {
+        const { total } = await db.queryOne(sqlCheck, [listOrdersDetail[i].productId])
+        if (total == 0) {
+            const { price } = await db.queryOne(sqlGetPrice, [listOrdersDetail[i].productId])
+            const totalPrice = price * listOrdersDetail[i].quantity
+            await db.query(sql, [orderId, listOrdersDetail[i].productId, listOrdersDetail[i].quantity, totalPrice])
+        } else if (total > 0) {
+            const { discount_condition, percent } = await db.queryOne(sqlCheckDiscount, [listOrdersDetail[i].productId])
+            if (quantity >= discount_condition) {
+                const { price } = await db.queryOne(sqlGetPrice, [listOrdersDetail[i].productId])
+                const totalPrice = price * listOrdersDetail[i].quantity * (1 - percent / 100)
+                await db.query(sql, [orderId, listOrdersDetail[i].productId, listOrdersDetail[i].quantity, totalPrice])
+            }
+            else {
+                const { price } = await db.queryOne(sqlGetPrice, [productId])
+                const totalPrice = price * quantity
+                await db.query(sql, [orderId, listOrdersDetail[i].productId, listOrdersDetail[i].quantity, totalPrice])
+            }
+        }
+    }
+    const { totalPrice } = await db.queryOne(sqlTotalPrice, [orderId])
+    await db.query(sqlUpdatePrice, [totalPrice, orderId])
 }
-const updateCustomerOrderById = async ({ orderdate, payment, note }, id) => {
-    const sqlTotalMoney = `
-    select SUM(price) as money 
-    from db_orderdetail
-    where trash = 0 and orderid = ?;
-    `
-    const sql = `
-    update db_order
-    set orderdate=?,
-    money = ?,
-    payment = ?,
-    note=?
-    where orderCode = ? and trash = 0 and \`status\` = 1
-    `
-    const {money} = await db.queryOne(sqlTotalMoney,[id])
-    
-    await db.query(sql, [orderdate, money, payment, note, id])
-}
+
 const deleteOrderById = async (id) => {
     const sql = `update db_order
     set trash =1
     where orderCode = ?;
     `
+    const sqlDetail = `update db_orderdetail
+    set trash =1
+    where orderid = ?;
+    `
     await db.query(sql, [id])
+    await db.query(sqlDetail, [id])
 }
 const parameterOrder = async () => {
     const sql = `
@@ -214,15 +244,13 @@ const parameterOrder = async () => {
     }
 }
 module.exports = {
-    getAllGuestOrder,
-    getAllCustomerOrder,
+    getAllOrder,
     getGuestOrderbyPhone,
     getCustomerOrderbyId,
-    getCustomerOrderInfo,
+    getOrderByID,
     createGuestOrder,
     createCustomerOrder,
-    updateGuestOrderById,
-    updateCustomerOrderById,
+    createOrderDetail,
     deleteOrderById,
     parameterOrder,
 }
