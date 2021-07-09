@@ -389,7 +389,7 @@ const getRelatedProduct = async ({ limit, offset }, productID) => {
 }
 const getProductById = async (id) => {
     const sql = `
-    select db_product.id,db_category.\`name\` as category, db_product.\`name\`,db_product.videoUrl, db_product.detail, db_producer.\`name\` as producer,db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
+    select db_product.id,db_category.\`name\` as category, db_product.\`name\`,db_product.videoUrl, db_product.detail as description, db_producer.\`name\` as producer,db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
     from db_product
     inner join db_category on db_category.id = db_product.catid
     inner join db_producer on db_producer.id = db_product.producer
