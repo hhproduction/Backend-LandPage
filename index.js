@@ -62,7 +62,6 @@ app.use('/api/v1/producer', producerRouter);
 app.use('/api/v1/news', newsRouter)
 app.use('/api/v1/discount', discountRouter)
 //Listen
-//Reset deploy
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, (err) => {
     if (err) {
