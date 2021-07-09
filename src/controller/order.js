@@ -29,7 +29,7 @@ const getCustomerOrderbyId = async (req, res) => {
     })
 }
 const getOrderByID = async (req, res) => {
-    const {orderCode} = req.params
+    const { orderCode } = req.params
     const { data, orderDetail } = await orderService.getOrderByID(orderCode)
     res.send({
         status: 1,
@@ -55,13 +55,30 @@ const createCustomerOrder = async (req, res) => {
         message: "Tao order thanh cong"
     })
 }
-
+const cancelCustomerOrder = async (res, req) => {
+    const token = req.headers.authorization.split(' ')[1]
+    const decodedToken = security.verifyToken(token)
+    const customerId = decodedToken.customerId
+    await orderService.cancelCustomerOrder(customerId)
+    res.send({
+        status: 1,
+        message: "Đang chờ xác nhận hủy đơn hàng."
+    })
+}
+const cancelOrder = async (res, req) => {
+    const {orderCode} = req.params
+    await orderService.cancelOrder(orderCode)
+    res.send({
+        status: 1,
+        message: "Đã hủy đơn hàng."
+    })
+}
 const deleteOrderById = async (req, res) => {
     const { id } = req.params
     await orderService.deleteOrderbyID(id)
     res.send({
-        status:1,
-        message:"xoa order thanh cong"
+        status: 1,
+        message: "xoa order thanh cong"
     })
 
 }
@@ -73,4 +90,6 @@ module.exports = {
     createGuestOrder,
     createCustomerOrder,
     deleteOrderById,
+    cancelCustomerOrder,
+    cancelOrder
 }

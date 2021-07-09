@@ -18,6 +18,11 @@ Route.post('/guest',
   Trycatch(orderController.createGuestOrder));
 Route.post('/customer', requireCustomerLogin,
   Trycatch(orderController.createCustomerOrder));
+Route.put('/customer/cancelOrder', requireCustomerLogin,
+  Trycatch(orderController.cancelCustomerOrder));
+Route.put('/orderCode', requireLogin,
+  requireRole('ADMIN'),
+  Trycatch(orderController.cancelOrder));
 Route.delete('/:id', requireLogin,
   requireRole('ADMIN'),
   Trycatch(orderController.deleteOrderById));

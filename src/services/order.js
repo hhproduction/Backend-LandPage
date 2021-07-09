@@ -216,7 +216,22 @@ const createOrderDetail = async ({ listOrdersDetail }, orderId) => {
     const { totalPrice } = await db.queryOne(sqlTotalPrice, [orderId])
     await db.query(sqlUpdatePrice, [totalPrice, orderId])
 }
-
+const cancelCustomerOrder = async (customerID) => {
+    const sql = `
+    update db_order
+    set \`status\` = 'CHỜ HỦY'
+    where customerid = ?
+    `
+    await db.query(sql, [customerID])
+}
+const cancelOrder = async (orderCode) => {
+    const sql = `
+    update db_order
+    set \`status\` = 'ĐÃ HỦY'
+    where orderCode = ?
+    `
+    await db.query(sql, [orderCode])
+}
 const deleteOrderById = async (id) => {
     const sql = `update db_order
     set trash =1
@@ -253,4 +268,6 @@ module.exports = {
     createOrderDetail,
     deleteOrderById,
     parameterOrder,
+    cancelCustomerOrder,
+    cancelOrder
 }
