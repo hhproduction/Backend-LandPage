@@ -554,7 +554,7 @@ const getProductByCategoryID = async (categoryId, { limit, offset }) => {
             })
         }
         const products = await db.queryMulti(sqlChild, [categoryId, limit, offset])
-        for (let i = 0; i < products.length; i++) {
+        for (let i = 0; i < productsParent.length; i++) {
             const imageList = await db.queryMulti(sqlImageList, [products[i].id])
             const variants = await db.queryMulti(sqlVartiant, [products[i].id])
             const comments = await db.queryMulti(sqlComment, [products[i].id])
@@ -680,7 +680,7 @@ const getProductByCategoryIDSortedByTime = async (categoryId, { limit, offset })
     const { parent_id } = await db.queryOne(sqlCheckCatParent, [categoryId])
     if (parent_id == 0) {
         const productsParent = await db.queryMulti(sqlParent, [parent_id, limit, offset])
-        for (let i = 0; i < products.length; i++) {
+        for (let i = 0; i < productsParent.length; i++) {
             const imageList = await db.queryMulti(sqlImageList, [productsParent[i].id])
             const variants = await db.queryMulti(sqlVartiant, [productsParent[i].id])
             const comments = await db.queryMulti(sqlComment, [productsParent[i].id])
@@ -830,7 +830,7 @@ const getProductByCategoryIDSortedByNumberBuy = async (categoryId, { limit, offs
     const { parent_id } = await db.queryOne(sqlCheckCatParent, [categoryId])
     if (parent_id == 0) {
         const productsParent = await db.queryMulti(sqlParent, [parent_id, limit, offset])
-        for (let i = 0; i < products.length; i++) {
+        for (let i = 0; i < productsParent.length; i++) {
             const imageList = await db.queryMulti(sqlImageList, [productsParent[i].id])
             const variants = await db.queryMulti(sqlVartiant, [productsParent[i].id])
             const comments = await db.queryMulti(sqlComment, [productsParent[i].id])
@@ -980,7 +980,7 @@ const getProductByCategoryIDSortedByPriceASC = async (categoryId, { limit, offse
     const { parent_id } = await db.queryOne(sqlCheckCatParent, [categoryId])
     if (parent_id == 0) {
         const productsParent = await db.queryMulti(sqlParent, [parent_id, limit, offset])
-        for (let i = 0; i < products.length; i++) {
+        for (let i = 0; i < productsParent.length; i++) {
             const imageList = await db.queryMulti(sqlImageList, [productsParent[i].id])
             const variants = await db.queryMulti(sqlVartiant, [productsParent[i].id])
             const comments = await db.queryMulti(sqlComment, [productsParent[i].id])
@@ -1130,7 +1130,7 @@ const getProductByCategoryIDSortedByPriceDESC = async (categoryId, { limit, offs
     const { parent_id } = await db.queryOne(sqlCheckCatParent, [categoryId])
     if (parent_id == 0) {
         const productsParent = await db.queryMulti(sqlParent, [parent_id, limit, offset])
-        for (let i = 0; i < products.length; i++) {
+        for (let i = 0; i < productsParent.length; i++) {
             const imageList = await db.queryMulti(sqlImageList, [productsParent[i].id])
             const variants = await db.queryMulti(sqlVartiant, [productsParent[i].id])
             const comments = await db.queryMulti(sqlComment, [productsParent[i].id])
