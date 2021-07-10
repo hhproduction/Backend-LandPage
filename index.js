@@ -66,7 +66,7 @@ app.use('/api/v1/producer', producerRouter);
 app.use('/api/v1/news', newsRouter)
 app.use('/api/v1/discount', discountRouter)
 //Listen ahihi
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 8081;
 app.listen(PORT, (err) => {
     if (err) {
         console.log(err);
