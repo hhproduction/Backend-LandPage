@@ -37,7 +37,7 @@ const createCustomer = async (req, res) => {
         return { error }
     }
     const { id } = await customerService.createCustomer(req.body)
-    await customerService.createCustomerAvatar(file.path, file.mimetype, file.size, id)
+    await customerService.createCustomerAvatar(file.location, file.mimetype, file.size, id)
     res.send({
         status: 1,
         message: "Sign Up successful.",
