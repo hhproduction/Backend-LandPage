@@ -786,7 +786,7 @@ const getProductByCategoryIDSortedByPriceDESC = async (categoryId, { limit, offs
     (select id from db_category
     where parent_id = ?
     or  id = ?)
-    order by price ASC,
+    order by price DESC,
                 \`name\` ASC
     limit ?
     offset ?; 
