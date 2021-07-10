@@ -47,8 +47,10 @@ const producerRouter = require('./src/routers/producer')
 const newsRouter = require('./src/routers/news')
 const discountRouter = require('./src/routers/discount')
 const helloRouter= require('./src/routers/hello')
+const apiHelloRouter = require('./src/routers/apiHello')
 
 app.use('/',helloRouter)
+app.use('/api/v1',apiHelloRouter)
 app.use('/api/v1/auth_admin', authAdmin);
 app.use('/api/v1/auth_customer', authCustomer);
 app.use('/api/v1/parameter', parameterRouter);
