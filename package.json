@@ -10,7 +10,6 @@
   "engines": {
     "node": "^14.17.3"
   },
-  "engineStrict": true,
   "author": "",
   "license": "ISC",
   "dependencies": {
