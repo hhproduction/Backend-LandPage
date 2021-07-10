@@ -84,7 +84,7 @@ const createCustomer = async ({ fullname, username, password, birth, gender, pro
         where username = ?
         `
         const encryptedPassword = await security.generatePassword(password)
-        await db.query(sql, [fullname, username, encryptedPassword, birth, gender, province, district, address, phone, email])
+        await db.query(sql, [fullname, username, encryptedPassword, birth, gender, Number(province), Number(district), address, phone, email])
         const {id} = await db.queryOne(sqlID,username)
         return {
             id
