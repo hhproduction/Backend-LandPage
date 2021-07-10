@@ -22,7 +22,7 @@ const fileFilter = (req, file, cb) => {
 const store = multer({
     storage: multerS3({
         s3: s3,
-        bucket: process.env.AWS_BUCKET_NAME,
+        bucket: 'tradao-bucket',
         key: (req, file, cb) => {
             cb(null, path.basename(file.originalname, path.extname(file.originalname))+'-'+Date.now() +path.extname(file.originalname))
         }
