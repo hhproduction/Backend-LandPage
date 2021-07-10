@@ -5,8 +5,7 @@ const path = require('path')
 
 const s3 = new AWS.S3({
     accessKeyId: process.env.AWS_ID,
-    secretAccessKey: process.env.AWS_SECRET,
-    Bucket: "tradao-bucket"
+    secretAccessKey: process.env.AWS_SECRET
 })
 
 
@@ -23,6 +22,7 @@ const fileFilter = (req, file, cb) => {
 const store = multer({
     storage: multerS3({
         s3: s3,
+        bucket: process.env.AWS_BUCKET_NAME,
         key: (req, file, cb) => {
             cb(null, path.basename(file.originalname, path.extname(file.originalname))+'-'+Date.now() +path.extname(file.originalname))
         }
