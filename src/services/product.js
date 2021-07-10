@@ -491,6 +491,8 @@ const getProductByCategoryID = async (categoryId, { limit, offset }) => {
     const sql = `
     select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer,db_product.detail, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
     from db_product
+    inner join db_category on db_category.id = db_product.catid
+    inner join db_producer on db_producer.id = db_product.producer
     where catid in 
     (select id from db_category
     where parent_id = ?
@@ -560,6 +562,8 @@ const getProductByCategoryIDSortedByTime = async (categoryId, { limit, offset })
     const sql = `
     select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer,db_product.detail, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
     from db_product
+    inner join db_category on db_category.id = db_product.catid
+    inner join db_producer on db_producer.id = db_product.producer
     where catid in 
     (select id from db_category
     where parent_id = ?
@@ -630,6 +634,8 @@ const getProductByCategoryIDSortedByNumberBuy = async (categoryId, { limit, offs
     const sql = `
     select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer,db_product.detail, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
     from db_product
+    inner join db_category on db_category.id = db_product.catid
+    inner join db_producer on db_producer.id = db_product.producer
     where catid in 
     (select id from db_category
     where parent_id = ?
@@ -701,6 +707,8 @@ const getProductByCategoryIDSortedByPriceASC = async (categoryId, { limit, offse
     const sql = `
     select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer,db_product.detail, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
     from db_product
+    inner join db_category on db_category.id = db_product.catid
+    inner join db_producer on db_producer.id = db_product.producer
     where catid in 
     (select id from db_category
     where parent_id = ?
@@ -772,6 +780,8 @@ const getProductByCategoryIDSortedByPriceDESC = async (categoryId, { limit, offs
     const sql = `
     select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer,db_product.detail, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
     from db_product
+    inner join db_category on db_category.id = db_product.catid
+    inner join db_producer on db_producer.id = db_product.producer
     where catid in 
     (select id from db_category
     where parent_id = ?
