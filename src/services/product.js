@@ -424,13 +424,56 @@ const getProductById = async (id) => {
         }
     }
 }
-const getProductByName = async (name, { limit, offset }) => {
+const getProductByName = async (name, { limit, offset, sort }) => {
     const sql = `
     select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer,db_product.detail, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
     from db_product
     inner join db_category on db_category.id = db_product.catid
     inner join db_producer on db_producer.id = db_product.producer
     where db_product.trash = 0 and db_product.\`name\` LIKE ?
+    limit ?
+    offset ?;
+    `
+    const sqlSortTime = `
+    select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer,db_product.detail, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
+    from db_product
+    inner join db_category on db_category.id = db_product.catid
+    inner join db_producer on db_producer.id = db_product.producer
+    where db_product.trash = 0 and db_product.\`name\` LIKE ?
+    order by created_at DESC
+    limit ?
+    offset ?;
+    `
+    const sqlSortNumberBuy = `
+    select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer,db_product.detail, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
+    from db_product
+    inner join db_category on db_category.id = db_product.catid
+    inner join db_producer on db_producer.id = db_product.producer
+    where db_product.trash = 0 and db_product.\`name\` LIKE ?
+    order by number_buy DESC,
+            \`name\` ASC
+    limit ?
+    offset ?;
+    `
+    const sqlSortPriceASC = `
+    select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer,db_product.detail, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
+    from db_product
+    inner join db_category on db_category.id = db_product.catid
+    inner join db_producer on db_producer.id = db_product.producer
+    where db_product.trash = 0 and db_product.\`name\` LIKE ?
+    order by price ASC,
+            \`name\` ASC
+    limit ?
+    offset ?;
+    `
+    const sqlSortPriceDESC = `
+    select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer,db_product.detail, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
+    from db_product
+    inner join db_category on db_category.id = db_product.catid
+    inner join db_producer on db_producer.id = db_product.producer
+    where db_product.trash = 0 and db_product.\`name\` LIKE ?
+    order by price DESC,
+            \`name\` ASC
     limit ?
     offset ?;
     `
@@ -450,12 +493,24 @@ const getProductByName = async (name, { limit, offset }) => {
     where productID = ?
     `
     var data = []
-    const products = await db.queryMulti(sql, [name, limit, offset])
-    const countsql = `
-    select count(id) as total from db_product
-    where trash =0 and db_product.\`name\` LIKE ?
-    `
-    const { total } = await db.queryOne(countsql, [name])
+    var products = []
+    switch (sort) {
+        case 'time':
+            products = await db.queryMulti(sqlSortTime, [name, limit, offset])
+            break;
+        case 'number_buy':
+            products = await db.queryMulti(sqlSortNumberBuy, [name, limit, offset])
+            break;
+        case 'price_ASC':
+            products = await db.queryMulti(sqlSortPriceASC, [name, limit, offset])
+            break;
+        case 'price_DESC':
+            products = await db.queryMulti(sqlSortPriceDESC, [name, limit, offset])
+            break;
+        default:
+            products = await db.queryMulti(sql, [name, limit, offset])
+            break;
+    }
     for (let i = 0; i < products.length; i++) {
         const imageList = await db.queryMulti(sqlImageList, [products[i].id])
         const variants = await db.queryMulti(sqlVartiant, [products[i].id])
@@ -479,6 +534,11 @@ const getProductByName = async (name, { limit, offset }) => {
             comments: comments
         })
     }
+    const countsql = `
+    select count(id) as total from db_product
+    where trash =0 and db_product.\`name\` LIKE ?
+    `
+    const { total } = await db.queryOne(countsql, [name])
     return {
         data,
         metadata: {
