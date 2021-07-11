@@ -11,7 +11,7 @@ const getAllProduct = async ({ limit, offset }) => {
     offset ?;
     `
     const sqlImageList = `
-    select image
+    select image, id as image_id
     from db_product_image
     where productID = ?
     `
@@ -75,7 +75,7 @@ const getAllProductSortedByNumberBuy = async ({ limit, offset }) => {
     offset ?;
     `
     const sqlImageList = `
-    select image
+    select image, id as image_id
     from db_product_image
     where productID = ?
     `
@@ -139,7 +139,7 @@ const getAllProductSortedByTime = async ({ limit, offset }) => {
     offset ?;
     `
     const sqlImageList = `
-    select image
+    select image, id as image_id
     from db_product_image
     where productID = ?
     `
@@ -203,7 +203,7 @@ const getAllProductSortedByPriceASC = async ({ limit, offset }) => {
     offset ?;
     `
     const sqlImageList = `
-    select image
+    select image, id as image_id
     from db_product_image
     where productID = ?
     `
@@ -267,7 +267,7 @@ const getAllProductSortedByPriceDESC = async ({ limit, offset }) => {
     offset ?;
     `
     const sqlImageList = `
-    select image
+    select image, id as image_id
     from db_product_image
     where productID = ?
     `
@@ -333,7 +333,7 @@ const getRelatedProduct = async ({ limit, offset }, productID) => {
     offset ?;
     `
     const sqlImageList = `
-    select image
+    select image, id as image_id
     from db_product_image
     where productID = ?
     `
@@ -478,7 +478,7 @@ const getProductByName = async (name, { limit, offset, sort }) => {
     offset ?;
     `
     const sqlImageList = `
-    select image
+    select image, id as image_id
     from db_product_image
     where productID = ?
     `
@@ -561,7 +561,7 @@ const getProductByCategoryID = async (categoryId, { limit, offset }) => {
     offset ?; 
     `
     const sqlImageList = `
-    select image
+    select image, id as image_id
     from db_product_image
     where productID = ?
     `
@@ -633,7 +633,7 @@ const getProductByCategoryIDSortedByTime = async (categoryId, { limit, offset })
     offset ?; 
     `
     const sqlImageList = `
-    select image
+    select image, id as image_id
     from db_product_image
     where productID = ?
     `
@@ -706,7 +706,7 @@ const getProductByCategoryIDSortedByNumberBuy = async (categoryId, { limit, offs
     offset ?; 
     `
     const sqlImageList = `
-    select image
+    select image, id as image_id
     from db_product_image
     where productID = ?
     `
@@ -779,7 +779,7 @@ const getProductByCategoryIDSortedByPriceASC = async (categoryId, { limit, offse
     offset ?; 
     `
     const sqlImageList = `
-    select image
+    select image, id as image_id
     from db_product_image
     where productID = ?
     `
@@ -852,7 +852,7 @@ const getProductByCategoryIDSortedByPriceDESC = async (categoryId, { limit, offs
     offset ?; 
     `
     const sqlImageList = `
-    select image
+    select image, id as image_id
     from db_product_image
     where productID = ?
     `
@@ -920,7 +920,7 @@ const getProductByProducerID = async (producerId, { limit, offset }) => {
     offset ?;
     `
     const sqlImageList = `
-    select image
+    select image, id as image_id
     from db_product_image
     where productID = ?
     `
