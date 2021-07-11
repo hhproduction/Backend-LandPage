@@ -36,9 +36,13 @@ Route.get('/search/:name',
 Route.post('/',
   requireLogin,
   requireRole("ADMIN"),
-  store.array('imagesProduct',15),
+  store.array('imagesProduct', 15),
   Trycatch(productController.createProduct));
-
+Route.post('/variant/:productID',
+  requireLogin,
+  requireRole("ADMIN"),
+  store.single('imagesProduct'),
+  Trycatch(productController.createProductVariant));
 // Route.post('/upload_multiple/:id',
 //   requireLogin,
 //   requireRole('ADMIN'),

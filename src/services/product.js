@@ -1012,6 +1012,24 @@ const createProductImage = async (files, id) => {
     `
     await db.query(sql, [values])
 }
+const createProductVariant = async ({ name, instock, price, color }, file, productID) => {
+    const sqlVartiant = `
+    insert into db_product_variant (id, \`name\`, instock, price, imageID, color, productID) 
+    values (uuid(),?,?,?,?,?,?)
+    `
+    const sqlImage = `
+    insert into db_product_image (\`id\`, \`image\`,\`type\`,\`size\`,\`productID\`) 
+    values (uuid(),?,?,?,?);
+    `
+    const sqlImageID = `
+    select id as image_id
+    from db_product_image
+    where image=?;
+    `
+    await db.query(sqlImage, [file.location, file.mimetype, file.size, productID])
+    const { image_id } = await db.queryOne(sqlImageID, [file.location])
+    await db.query(sqlVartiant, [name, instock, price, image_id, color, productID])
+}
 const updateProductByID = async ({ name, videoUrl, detail, producer, instock, price, catid, productID }) => {
     const sqlCountBuy = `
     select sum(quantity) as number_buy
@@ -1024,7 +1042,6 @@ const updateProductByID = async ({ name, videoUrl, detail, producer, instock, pr
     update db_product
     set \`name\` = ?, 
     videoUrl =?,
-    description =?,
     detail = ?, 
     producer = ?, 
     instock = ?, 
@@ -1033,7 +1050,7 @@ const updateProductByID = async ({ name, videoUrl, detail, producer, instock, pr
     catid = ? 
     where id = ? and trash = 0;
     `
-    await db.query(sql, [name, videoUrl, detail, feedBack, producer, instock, number_buy, price, catid, productID])
+    await db.query(sql, [name, videoUrl, detail, producer, instock, number_buy, price, catid, productID])
 }
 const deleteProductByID = async (id) => {
     const sql = `
@@ -1078,6 +1095,7 @@ module.exports = {
     getProductByCategoryIDSortedByTime,
     createProduct,
     createProductImage,
+    createProductVariant,
     updateProductByID,
     deleteProductByID,
     parameterProduct,

@@ -82,9 +82,15 @@ const createProduct = async (req, res) => {
         data: files
     })
 }
-// const uploadMultipleProductImage = async (req, res, next) => {
-
-// }
+const createProductVariant = async (req, res) => {
+    const { productID } = req.params
+    const file = req.file
+    if (!file) {
+        const error = new Error('Please choose files');
+        return { error }
+    }
+    await productService.createProductVariant(req.body, file, productID)
+}
 
 const updateProduct = async (req, res) => {
     const { id } = req.params;
@@ -189,6 +195,7 @@ module.exports = {
     getRelatedProduct,
     getProductById,
     createProduct,
+    createProductVariant,
     // uploadMultipleProductImage,
     updateProduct,
     deleteProduct,
