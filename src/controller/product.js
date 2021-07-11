@@ -90,6 +90,19 @@ const createProductVariant = async (req, res) => {
         return { error }
     }
     await productService.createProductVariant(req.body, file, productID)
+    res.send({
+        status: 1,
+        message: "Product variant was created successfull",
+        data: file
+    })
+}
+const createProductComment = async (req, res) => {
+    const { productID } = req.params
+    await productService.createProductComment(productID, req.body)
+    res.send({
+        status: 1,
+        message: "Product comment was created successfull"
+    })
 }
 
 const updateProduct = async (req, res) => {
@@ -100,6 +113,14 @@ const updateProduct = async (req, res) => {
         message: "Update product successful."
     })
 }
+const updateProductComment = async (req, res) => {
+    const { productID } = req.params;
+    await productService.updateProductComment(req.body, productID)
+    res.send({
+        status: 1,
+        message: "Update product comment successful."
+    })
+}
 const deleteProduct = async (req, res) => {
     const { id } = req.params
     await productService.deleteProductByID(id)
@@ -107,7 +128,6 @@ const deleteProduct = async (req, res) => {
         status: 1,
         message: "Delete product successful."
     })
-
 }
 const getProductByCategoryID = async (req, res) => {
     const { categoryId } = req.params;
@@ -185,6 +205,22 @@ const deleteProductImage = async (req, res) => {
         }
     })
 }
+const deleteProductVariantByID = async (req, res) => {
+    const { variantID } = req.params
+    await productService.deleteProductVariantByID(variantID)
+    res.send({
+        status: 1,
+        message: "Delete product variant successful."
+    })
+}
+const deleteProductCommentByID = async (req, res) => {
+    const { commentID } = req.params
+    await productService.deleteProductCommentByID(commentID)
+    res.send({
+        status: 1,
+        message: "Delete product comment successful."
+    })
+}
 
 module.exports = {
     getAllproduct,
@@ -196,9 +232,10 @@ module.exports = {
     getProductById,
     createProduct,
     createProductVariant,
+    createProductComment,
     // uploadMultipleProductImage,
     updateProduct,
-    deleteProduct,
+    updateProductComment,
     getProductByCategoryID,
     getProductByCategoryIDSortedByNumberBuy,
     getProductByCategoryIDSortedByPriceASC,
@@ -206,5 +243,8 @@ module.exports = {
     getProductByCategoryIDSortedByTime,
     getProductByName,
     getProductByProducerID,
-    deleteProductImage
+    deleteProductImage,
+    deleteProductCommentByID,
+    deleteProduct,
+    deleteProductVariantByID
 }

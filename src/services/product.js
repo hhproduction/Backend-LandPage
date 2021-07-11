@@ -1030,6 +1030,13 @@ const createProductVariant = async ({ name, instock, price, color }, file, produ
     const { image_id } = await db.queryOne(sqlImageID, [file.location])
     await db.query(sqlVartiant, [name, instock, price, image_id, color, productID])
 }
+const createProductComment = async (productID, { username, comment }) => {
+    const sql = `
+    insert into db_product_variant (id, productId, username, comment)
+    values (uuid(), ? , ? ,?);
+    `
+    await db.query(sql, [productID, username, comment])
+}
 const updateProductByID = async ({ name, videoUrl, detail, producer, instock, price, catid, productID }) => {
     const sqlCountBuy = `
     select sum(quantity) as number_buy
@@ -1052,6 +1059,15 @@ const updateProductByID = async ({ name, videoUrl, detail, producer, instock, pr
     `
     await db.query(sql, [name, videoUrl, detail, producer, instock, number_buy, price, catid, productID])
 }
+const updateProductComment = async ({ username, comment }, productID) => {
+    const sql = `
+    update db_product_comment
+    set username=?,
+    comment=?
+    where productID = ?
+    `
+    await db.query(sql, [username, comment, productID])
+}
 const deleteProductByID = async (id) => {
     const sql = `
     update db_product
@@ -1063,6 +1079,18 @@ const deleteProductByID = async (id) => {
 const deleteProductImageByID = async (id) => {
     const sql = `
     delete from db_product_image where image like ?;
+    `
+    await db.query(sql, [id])
+}
+const deleteProductVariantByID = async (id) => {
+    const sql = `
+    delete from db_product_variant where id =? ;
+    `
+    await db.query(sql, [id])
+}
+const deleteProductCommentByID = async (id) => {
+    const sql = `
+    delete from db_product_comment where id =? ;
     `
     await db.query(sql, [id])
 }
@@ -1096,10 +1124,14 @@ module.exports = {
     createProduct,
     createProductImage,
     createProductVariant,
+    createProductComment,
     updateProductByID,
     deleteProductByID,
+    deleteProductVariantByID,
+    deleteProductCommentByID,
+    deleteProductImageByID,
+    updateProductComment,
     parameterProduct,
     getProductByName,
-    getProductByProducerID,
-    deleteProductImageByID
+    getProductByProducerID
 }

@@ -59,9 +59,15 @@ Route.put('/:id',
   requireLogin,
   requireRole("ADMIN"),
   Trycatch(productController.updateProduct));
-
+Route.put('/comment/:commentID',Trycatch(productController.updateProductComment))
 Route.delete('/:id',
   requireLogin,
   requireRole("ADMIN"),
   Trycatch(productController.deleteProduct));
+Route.delete('/variant/:variantID',
+  requireLogin,
+  requireRole('ADMIN'), 
+  Trycatch(productController.deleteProductVariantByID)
+)
+Route.delete('/comment/:commentID',Trycatch(productController.deleteProductCommentByID))
 module.exports = Route
