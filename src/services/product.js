@@ -319,16 +319,26 @@ const getAllProductSortedByPriceDESC = async ({ limit, offset }) => {
 }
 const getRelatedProduct = async ({ limit, offset }, productID) => {
     const sqlCat = `
-    select catid
+    select catid, producer
     from db_product
     where trash = 0 and id = ?
     `
     const sql = `
-    select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer,db_product.detail, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
+    (select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer,db_product.detail, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
     from db_product
     inner join db_category on db_category.id = db_product.catid
     inner join db_producer on db_producer.id = db_product.producer
-    where db_product.trash = 0 and db_product.catid = ?
+    where db_product.trash = 0 and catid in 
+        (select id from db_category
+        where parent_id = ?
+        or  id = ?))
+    union
+    (select db_product.id, db_product.\`name\`, db_category.\`name\` as category, db_producer.\`name\` as producer,db_product.detail, db_product.instock,db_product.number_buy, db_product.price,db_product.created_at,db_product.created_by, db_product.modified_at,db_product.modified_by,db_product.\`status\`
+    from db_product
+    inner join db_category on db_category.id = db_product.catid
+    inner join db_producer on db_producer.id = db_product.producer
+    where db_product.producer = ?
+    )
     limit ?
     offset ?;
     `
@@ -348,14 +358,17 @@ const getRelatedProduct = async ({ limit, offset }, productID) => {
     where productID = ?
     `
     var data = []
-    const { catid } = await db.queryOne(sqlCat, productID)
-    const products = await db.queryMulti(sql, [catid, limit, offset])
+    const { catid, producer } = await db.queryOne(sqlCat, productID)
+    const products = await db.queryMulti(sql, [catid, catid, producer, limit, offset])
     const countsql = `
     select count(id) as total 
     from db_product
-    where catid = ?
+    where db_product.trash = 0 and catid in 
+    (select id from db_category
+    where parent_id = ?
+    or  id = ?) or db_product.producer = ?
     `
-    const { total } = await db.queryOne(countsql, [catid])
+    const { total } = await db.queryOne(countsql, [catid, catid, producer])
     for (let i = 0; i < products.length; i++) {
         const imageList = await db.queryMulti(sqlImageList, [products[i].id])
         const variants = await db.queryMulti(sqlVartiant, [products[i].id])
@@ -553,7 +566,7 @@ const getProductByCategoryID = async (categoryId, { limit, offset }) => {
     from db_product
     inner join db_category on db_category.id = db_product.catid
     inner join db_producer on db_producer.id = db_product.producer
-    where catid in 
+    where db_product.trash = 0 and catid in 
     (select id from db_category
     where parent_id = ?
     or  id = ?)
@@ -603,7 +616,7 @@ const getProductByCategoryID = async (categoryId, { limit, offset }) => {
     const countsql = `
         select count(id) as total
         from db_product
-        where catid in (
+        where trash = 0 and catid in (
             select id from db_category
             where parent_id = ?
             or  id = ?
@@ -624,7 +637,7 @@ const getProductByCategoryIDSortedByTime = async (categoryId, { limit, offset })
     from db_product
     inner join db_category on db_category.id = db_product.catid
     inner join db_producer on db_producer.id = db_product.producer
-    where catid in 
+    where db_product.trash = 0 and catid in 
     (select id from db_category
     where parent_id = ?
     or  id = ?)
@@ -675,7 +688,7 @@ const getProductByCategoryIDSortedByTime = async (categoryId, { limit, offset })
     const countsql = `
         select count(id) as total
         from db_product
-        where catid in (
+        where trash = 0 and catid in (
             select id from db_category
             where parent_id = ?
             or  id = ?
@@ -696,7 +709,7 @@ const getProductByCategoryIDSortedByNumberBuy = async (categoryId, { limit, offs
     from db_product
     inner join db_category on db_category.id = db_product.catid
     inner join db_producer on db_producer.id = db_product.producer
-    where catid in 
+    where db_product.trash = 0 and catid in 
     (select id from db_category
     where parent_id = ?
     or  id = ?)
@@ -748,7 +761,7 @@ const getProductByCategoryIDSortedByNumberBuy = async (categoryId, { limit, offs
     const countsql = `
         select count(id) as total
         from db_product
-        where catid in (
+        where trash = 0 and catid in (
             select id from db_category
             where parent_id = ?
             or  id = ?
@@ -769,7 +782,7 @@ const getProductByCategoryIDSortedByPriceASC = async (categoryId, { limit, offse
     from db_product
     inner join db_category on db_category.id = db_product.catid
     inner join db_producer on db_producer.id = db_product.producer
-    where catid in 
+    where db_product.trash = 0 and catid in 
     (select id from db_category
     where parent_id = ?
     or  id = ?)
@@ -821,7 +834,7 @@ const getProductByCategoryIDSortedByPriceASC = async (categoryId, { limit, offse
     const countsql = `
         select count(id) as total
         from db_product
-        where catid in (
+        where trash = 0 and catid in (
             select id from db_category
             where parent_id = ?
             or  id = ?
@@ -842,7 +855,7 @@ const getProductByCategoryIDSortedByPriceDESC = async (categoryId, { limit, offs
     from db_product
     inner join db_category on db_category.id = db_product.catid
     inner join db_producer on db_producer.id = db_product.producer
-    where catid in 
+    where db_product.trash = 0 and catid in 
     (select id from db_category
     where parent_id = ?
     or  id = ?)
@@ -894,7 +907,7 @@ const getProductByCategoryIDSortedByPriceDESC = async (categoryId, { limit, offs
     const countsql = `
         select count(id) as total
         from db_product
-        where catid in (
+        where trash = 0 and catid in (
             select id from db_category
             where parent_id = ?
             or  id = ?
