@@ -16,7 +16,7 @@ const getAllProduct = async ({ limit, offset }) => {
     where productID = ?
     `
     const sqlVartiant = `
-    select id, color, imageID as image_id, productID
+    select id, name, instock, price, color, imageID as image_id
     from db_product_variant
     where productID = ?
     `
@@ -80,7 +80,7 @@ const getAllProductSortedByNumberBuy = async ({ limit, offset }) => {
     where productID = ?
     `
     const sqlVartiant = `
-    select id, color, imageID as image_id, productID
+    select id, name, instock, price, color, imageID as image_id
     from db_product_variant
     where productID = ?
     `
@@ -144,7 +144,7 @@ const getAllProductSortedByTime = async ({ limit, offset }) => {
     where productID = ?
     `
     const sqlVartiant = `
-    select id, color, imageID as image_id, productID
+    select id, name, instock, price, color, imageID as image_id
     from db_product_variant
     where productID = ?
     `
@@ -208,7 +208,7 @@ const getAllProductSortedByPriceASC = async ({ limit, offset }) => {
     where productID = ?
     `
     const sqlVartiant = `
-    select id, color, imageID as image_id, productID
+    select id, name, instock, price, color, imageID as image_id
     from db_product_variant
     where productID = ?
     `
@@ -272,7 +272,7 @@ const getAllProductSortedByPriceDESC = async ({ limit, offset }) => {
     where productID = ?
     `
     const sqlVartiant = `
-    select id, color, imageID as image_id, productID
+    select id, name, instock, price, color, imageID as image_id
     from db_product_variant
     where productID = ?
     `
@@ -338,7 +338,7 @@ const getRelatedProduct = async ({ limit, offset }, productID) => {
     where productID = ?
     `
     const sqlVartiant = `
-    select id, color, imageID as image_id, productID
+    select id, name, instock, price, color, imageID as image_id
     from db_product_variant
     where productID = ?
     `
@@ -402,7 +402,7 @@ const getProductById = async (id) => {
     where db_product_image.productID = ?;
     `
     const sqlVartiant = `
-    select id, color, imageID as image_id, productID
+    select id, name, instock, price, color, imageID as image_id
     from db_product_variant
     where productID = ?
     `
@@ -483,7 +483,7 @@ const getProductByName = async (name, { limit, offset, sort }) => {
     where productID = ?
     `
     const sqlVartiant = `
-    select id, color, imageID as image_id, productID
+    select id, name, instock, price, color, imageID as image_id
     from db_product_variant
     where productID = ?
     `
@@ -566,7 +566,7 @@ const getProductByCategoryID = async (categoryId, { limit, offset }) => {
     where productID = ?
     `
     const sqlVartiant = `
-    select id, color, imageID as image_id, productID
+    select id, name, instock, price, color, imageID as image_id
     from db_product_variant
     where productID = ?
     `
@@ -638,7 +638,7 @@ const getProductByCategoryIDSortedByTime = async (categoryId, { limit, offset })
     where productID = ?
     `
     const sqlVartiant = `
-    select id, color, imageID as image_id, productID
+    select id, name, instock, price, color, imageID as image_id
     from db_product_variant
     where productID = ?
     `
@@ -711,7 +711,7 @@ const getProductByCategoryIDSortedByNumberBuy = async (categoryId, { limit, offs
     where productID = ?
     `
     const sqlVartiant = `
-    select id, color, imageID as image_id, productID
+    select id, name, instock, price, color, imageID as image_id
     from db_product_variant
     where productID = ?
     `
@@ -784,7 +784,7 @@ const getProductByCategoryIDSortedByPriceASC = async (categoryId, { limit, offse
     where productID = ?
     `
     const sqlVartiant = `
-    select id, color, imageID as image_id, productID
+    select id, name, instock, price, color, imageID as image_id
     from db_product_variant
     where productID = ?
     `
@@ -857,7 +857,7 @@ const getProductByCategoryIDSortedByPriceDESC = async (categoryId, { limit, offs
     where productID = ?
     `
     const sqlVartiant = `
-    select id, color, imageID as image_id, productID
+    select id, name, instock, price, color, imageID as image_id
     from db_product_variant
     where productID = ?
     `
@@ -925,7 +925,7 @@ const getProductByProducerID = async (producerId, { limit, offset }) => {
     where productID = ?
     `
     const sqlVartiant = `
-    select id, color, imageID as image_id, productID
+    select id, name, instock, price, color, imageID as image_id
     from db_product_variant
     where productID = ?
     `
