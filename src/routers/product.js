@@ -3,6 +3,8 @@ const productController = require('../controller/product')
 const { Trycatch } = require('../middlewares/errorHandle')
 const { requireLogin, requireRole } = require('../middlewares/auth')
 const { store } = require('../middlewares/multer')
+const { errorHandle } = require('../middlewares/errorHandle')
+
 Route.get('/',
   Trycatch(productController.getAllproduct));
 Route.get('/number_buy_sort',
@@ -14,7 +16,8 @@ Route.get('/price_sort_desc',
 Route.get('/time_sort',
   Trycatch(productController.getAllProductSortedByTime));
 Route.get('/related_product/:productID',
-  Trycatch(productController.getRelatedProduct));
+  Trycatch(productController.getRelatedProduct)
+);
 
 Route.get('/category/:categoryId',
   Trycatch(productController.getProductByCategoryID));
@@ -59,15 +62,15 @@ Route.put('/:id',
   requireLogin,
   requireRole("ADMIN"),
   Trycatch(productController.updateProduct));
-Route.put('/comment/:commentID',Trycatch(productController.updateProductComment))
+Route.put('/comment/:commentID', Trycatch(productController.updateProductComment))
 Route.delete('/:id',
   requireLogin,
   requireRole("ADMIN"),
   Trycatch(productController.deleteProduct));
 Route.delete('/variant/:variantID',
   requireLogin,
-  requireRole('ADMIN'), 
+  requireRole('ADMIN'),
   Trycatch(productController.deleteProductVariantByID)
 )
-Route.delete('/comment/:commentID',Trycatch(productController.deleteProductCommentByID))
+Route.delete('/comment/:commentID', Trycatch(productController.deleteProductCommentByID))
 module.exports = Route

@@ -1,23 +1,26 @@
 const Trycatch = (f) => async (req, res, next) => {
-    try {
-      await f(req,res,next)
-    } catch (error) {
-      next(error)
+  try {
+    // console.log('try');
+    await f(req, res, next)
+  } catch (error) {
+    next(error)
+    // console.log('err handle');
+    // errorHandle(error, req, res, next);
+  }
+}
+
+const errorHandle = (err, req, res, next) => {
+  res.status(err.status || 500)
+  res.send({
+    error: {
+      status: err.status || 500,
+      message: err.message
     }
-  }
-  
-  const errorHandle = (err, req, res, next) => {
-    if (err.code < 500 && err.code > 400) {
-      res.status(err.code)
-      res.send(err.message)
-    } else {
-      // res.status(401) // Unauthorized 
-      res.status(400)  
-      res.send('Bad request!')
-    }
-  }
-  
-  module.exports = {
-    errorHandle,
-    Trycatch
-  }
+  })
+  // next();
+}
+
+module.exports = {
+  errorHandle,
+  Trycatch
+}

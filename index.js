@@ -8,12 +8,11 @@ const bodyParser = require('body-parser')
 const morgan = require('morgan')
 const rfs = require('rotating-file-stream')
 const pagination = require('./src/middlewares/pagination')
-
+const { errorHandle } = require('./src/middlewares/errorHandle')
 const app = express()
 
 //Middleware
 
-// app.use('/uploads',express.static(path.resolve(__dirname,'./src/uploads')))
 app.use(bodyParser.json())
 app.use(cors())
 var accessLogStream = rfs.createStream('access.log', {
@@ -46,25 +45,34 @@ const districtRouter = require('./src/routers/district')
 const producerRouter = require('./src/routers/producer')
 const newsRouter = require('./src/routers/news')
 const discountRouter = require('./src/routers/discount')
-const helloRouter= require('./src/routers/hello')
+const helloRouter = require('./src/routers/hello')
 const apiHelloRouter = require('./src/routers/apiHello')
 
-app.use('/',helloRouter)
-app.use('/api/v1',apiHelloRouter)
-app.use('/api/v1/auth_admin', authAdmin);
-app.use('/api/v1/auth_customer', authCustomer);
-app.use('/api/v1/parameter', parameterRouter);
-app.use('/api/v1/category', categoryRouter);
-app.use('/api/v1/product', productRouter);
-app.use('/api/v1/order', orderRouter);
-app.use('/api/v1/admin', accountRouter);
-app.use('/api/v1/customer', customerRouter);
+
+app.use('/', helloRouter, errorHandle)
+app.use('/api/v1', apiHelloRouter, errorHandle)
+app.use('/api/v1/auth_admin', authAdmin, errorHandle);
+app.use('/api/v1/auth_customer', authCustomer, errorHandle);
+app.use('/api/v1/parameter', parameterRouter, errorHandle);
+app.use('/api/v1/category', categoryRouter, errorHandle);
+app.use('/api/v1/product', productRouter, errorHandle);
+app.use('/api/v1/order', orderRouter, errorHandle);
+app.use('/api/v1/admin', accountRouter, errorHandle);
+app.use('/api/v1/customer', customerRouter, errorHandle);
 // app.use('/api/v1/orderDetail', orderDetailRouter);
-app.use('/api/v1/province', provinceRouter);
-app.use('/api/v1/district', districtRouter);
-app.use('/api/v1/producer', producerRouter);
-app.use('/api/v1/news', newsRouter)
-app.use('/api/v1/discount', discountRouter)
+app.use('/api/v1/province', provinceRouter, errorHandle);
+app.use('/api/v1/district', districtRouter, errorHandle);
+app.use('/api/v1/producer', producerRouter, errorHandle);
+app.use('/api/v1/news', newsRouter, errorHandle)
+app.use('/api/v1/discount', discountRouter, errorHandle);
+
+// app.use((req, res, next) => {
+//     res.status(404).send({
+//         status:404,
+//         error:'Not Found'
+//     })
+// })
+
 //Listen ahihi
 const PORT = process.env.PORT || 8081;
 app.listen(PORT, (err) => {

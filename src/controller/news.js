@@ -31,6 +31,15 @@ const createNews = async (req, res) => {
         data: files
     })
 }
+const createNewsComment = async (req, res) => {
+    const {newsID} = req.params
+    await newsService.createNewsComment(req.body, newsID)
+    res.send({
+        status: 1,
+        message: "news comment was created successful.",
+        data: files
+    })
+}
 const uploadMultipleNewsImage = async (req, res, next) => {
 
     // const { id } = req.params;
@@ -50,12 +59,29 @@ const updateNews = async (req, res) => {
         message: "Update news successful."
     })
 }
+const updateNewsComment = async (req, res) => {
+    const { commentID } = req.params;
+    await newsService.updateNewsCommentByID(req.body, commentID)
+    res.send({
+        status: 1,
+        message: "Update news comment successful."
+    })
+}
 const deleteNews = async (req, res) => {
     const { id } = req.params
     await newsService.deleteNewsByID(id)
     res.send({
         status: 1,
         message: "Delete news successful."
+    })
+
+}
+const deleteNewsComment = async (req, res) => {
+    const { commentID } = req.params
+    await newsService.deleteNewsCommentByID(commentID)
+    res.send({
+        status: 1,
+        message: "Delete news comment successful."
     })
 
 }
@@ -86,8 +112,11 @@ module.exports = {
     getAllNews,
     getNewsById,
     createNews,
+    createNewsComment,
     uploadMultipleNewsImage,
     updateNews,
+    updateNewsComment,
+    deleteNewsComment,
     deleteNews,
     deleteNewsImage
 }

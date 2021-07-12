@@ -47,14 +47,14 @@ const createNews = async ({ title, content, detail, videoUrl }) => {
     insert into db_news (id, title,\`content\`, \`detail\`,  videoUrl)
     values(uuid(),?,?,?,?);
     `
-    const sqlID=`
+    const sqlID = `
     select id
     from db_news
     where title = ?
     `
     await db.query(sql, [title, content, detail, videoUrl])
-    const {id} = db.queryOne(sqlID,[title])
-    return{
+    const { id } = db.queryOne(sqlID, [title])
+    return {
         id
     }
 }
@@ -68,6 +68,21 @@ const createNewsImage = async (files, id) => {
     ?
     `
     await db.query(sql, [values])
+}
+const createNewsComment = async ({username, comment }, newsID) => {
+    const sql=`
+    insert into db_news_comment(id, newsID, username, comment)
+    values (uuid(),?,?,?);
+    `
+    await db.query(sql,[newsID,username,comment])
+}
+const updateNewsCommentByID = async ({comment}, commentID) => {
+    const sql=`
+    update db_news_comment
+    set comment = ?
+    where id = ?
+    `
+    await db.query(sql,[comment,commentID])
 }
 const updateNewsByID = async ({ title, content, detail, videoUrl }) => {
     const sql = `
@@ -85,9 +100,14 @@ set \`title\` = ?,
  catid = ? 
  where id = ? and trash = 0;
  `
-    await db.query(sql, [title,content, detail, videoUrl])
+    await db.query(sql, [title, content, detail, videoUrl])
 }
-
+const deleteNewsCommentByID = async (commentID) => {
+    const sql = `
+    delete from db_news_comment where id = ?
+    `
+    await db.query(sql, [id])
+}
 const deleteNewsByID = async (id) => {
     const sql = `
     update db_news
@@ -121,8 +141,11 @@ module.exports = {
     getNewsById,
     createNews,
     createNewsImage,
+    createNewsComment,
     updateNewsByID,
+    updateNewsCommentByID,
     deleteNewsByID,
+    deleteNewsCommentByID,
     parameterNews,
     deleteNewsImageByID
 }
