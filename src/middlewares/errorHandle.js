@@ -10,6 +10,15 @@ const Trycatch = (f) => async (req, res, next) => {
 }
 
 const errorHandle = (err, req, res, next) => {
+  if (err.status == 400) {
+    res.status(err.status || 500)
+    res.send({
+      status: err.status || 500,
+      error: {
+        message: 'Bad Request.'
+      }
+    })
+  }
   res.status(err.status || 500)
   res.send({
     status: err.status || 500,
