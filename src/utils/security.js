@@ -41,15 +41,17 @@ const verifyToken = token => {
   try {
     const data = jwt.verify(token, JWT_SECRET_KEY);
     return {
-      status:200,
+      status: 200,
       data
     }
   } catch (error) {
     return {
       status: 401,
-      name: 'TokenExpiredError',
-      message: 'jwt expired',
-      expiredAt: error.expiredAt
+      error: {
+        name: 'TokenExpiredError',
+        message: 'jwt expired',
+        expiredAt: error.expiredAt
+      }
     }
   }
 }
