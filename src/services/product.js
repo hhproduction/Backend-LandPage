@@ -408,11 +408,10 @@ const getProductById = async (id) => {
     inner join db_producer on db_producer.id = db_product.producer
     where db_product.trash = 0 and db_product.id=?;    
     `
-    const sqlImageProduct = `
-    select db_product_image.id, db_product_image.image, db_product_image.\`type\`, db_product_image.size, db_product_image.productID
-	from db_product_image
-    inner join db_product on db_product.id = db_product_image.productID
-    where db_product_image.productID = ?;
+    const sqlImageList = `
+    select image, id as image_id
+    from db_product_image
+    where productID = ?
     `
     const sqlVartiant = `
     select id, name, instock, price, color, imageID as image_id
@@ -425,7 +424,7 @@ const getProductById = async (id) => {
     where productID = ?
     `
     const result = await db.queryOne(sql, [id])
-    const imageList = await db.queryMulti(sqlImageProduct, [id])
+    const imageList = await db.queryMulti(sqlImageList, [id])
     const variants = await db.queryMulti(sqlVartiant, [id])
     const comments = await db.queryMulti(sqlComment, [id])
     return {
